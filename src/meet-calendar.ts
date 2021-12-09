@@ -1,3 +1,6 @@
+import { generateRoomWithoutSeparator } from "./RoomnameGenerator";
+import $ from "jquery";
+
 const BASE_DOMAIN = "talk.brave.com";
 const BASE_URL = "https://" + BASE_DOMAIN + "/";
 const APP_NAME = "Brave Talk";
@@ -784,8 +787,14 @@ function checkAndUpdateCalendarG2() {
     }
 }
 
+log("Welcome from the extension!");
+
 if (document.querySelector('body')?.dataset.viewfamily) {
     // this is google calendar new interface
-    checkAndUpdateCalendarG2();
+    log("connecting to gcal!");
+        checkAndUpdateCalendarG2();
 }
 
+function log(msg: string, ...data: any[]) {
+    console.log(msg, ...data);
+}

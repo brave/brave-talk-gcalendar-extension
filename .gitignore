@@ -8,3 +8,4 @@ calendar.pem
 
 build/
 node_modules/
+dist/

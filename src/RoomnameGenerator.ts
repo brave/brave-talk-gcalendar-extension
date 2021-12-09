@@ -1,7 +1,7 @@
 /**
  * Generates new room name.  This is how Brave Talk does it.
  */
-function generateRoomWithoutSeparator() {
+export function generateRoomWithoutSeparator() {
   const { crypto } = window;
   const buf = new Uint8Array(32);
   crypto.getRandomValues(buf);
