@@ -1,13 +1,10 @@
-const BASE_DOMAIN = "meet.jit.si";
+const BASE_DOMAIN = "talk.brave.com";
 const BASE_URL = "https://" + BASE_DOMAIN + "/";
 const APP_NAME = "Brave Talk";
-const NUMBER_RETRIEVE_SCRIPT = false;
-const CONFERENCE_MAPPER_SCRIPT = false;
 
 //A text to be used when adding info to the location field.
 const LOCATION_TEXT = APP_NAME + ' Meeting';
 
-let generateRoomNameAsDigits = false;
 function escapeHtml(unsafe) {
     return unsafe
          .replace(/&/g, "&amp;")
@@ -145,44 +142,12 @@ class EventContainer {
         }
         else {
 
-            if (generateRoomNameAsDigits) {
-                this.meetingId = randomDigitString(10);
-            }
-            else
-                this.meetingId = generateRoomWithoutSeparator();
+            this.meetingId = generateRoomWithoutSeparator();
 
-            if(NUMBER_RETRIEVE_SCRIPT) {
-                // queries a predefined location for settings
-                $.getJSON(NUMBER_RETRIEVE_SCRIPT,
-                    jsonobj => {
-                        this.inviteTextTemplate = jsonobj.inviteTextTemplate;
-
-                        // if there is a room name dictionary lets use it and
-                        // generate new room name
-                        if (jsonobj.roomNameDictionary) {
-                            this.meetingId = generateRoomWithoutSeparator(
-                                    jsonobj.roomNameDictionary);
-                        }
-
-                        if(!jsonobj.numbersEnabled)
-                            return;
-
-                        this.numbers = jsonobj.numbers;
-                        this.inviteNumbersTextTemplate
-                            = jsonobj.inviteNumbersTextTemplate;
-
-                        if (this.scheduleAutoCreateMeeting) {
-                            this.description.clickAddMeeting(
-                                false, this.location);
-                            this.scheduleAutoCreateMeeting = false;
-                        }
-                    });
-            } else {
-                if (this.scheduleAutoCreateMeeting) {
-                    this.description.clickAddMeeting(
-                        false, this.location);
-                    this.scheduleAutoCreateMeeting = false;
-                }
+            if (this.scheduleAutoCreateMeeting) {
+                this.description.clickAddMeeting(
+                    false, this.location);
+                this.scheduleAutoCreateMeeting = false;
             }
         }
     }
@@ -273,24 +238,7 @@ class Description {
     clickAddMeeting(isDescriptionUpdated, location) {
         if (!isDescriptionUpdated) {
             // Build the invitation content
-            if (CONFERENCE_MAPPER_SCRIPT) {
-                // queries a predefined location for settings
-                $.getJSON(CONFERENCE_MAPPER_SCRIPT
-                    + "?conference=" + this.event.meetingId + "@conference." + BASE_DOMAIN,
-                    jsonobj => {
-                        if (jsonobj.conference && jsonobj.id) {
-                            this.addDescriptionText(
-                                this.getInviteText(jsonobj.id));
-                        }
-                        else {
-                            this.addDescriptionText(
-                                this.getInviteText());
-                        }
-                    });
-            }
-            else {
-                this.addDescriptionText(this.getInviteText());
-            }
+            this.addDescriptionText(this.getInviteText());
             this.updateButtonURL();
 
             if (location)
@@ -883,173 +831,6 @@ class G2Description extends Description {
     }
 }
 
-/**
- * The outlook live calendar specific implementation of the event page.
- */
-class MSLiveEvent extends EventContainer {
-    constructor() {
-        super();
-
-        this.container = document.getElementsByTagName("BODY")[0];
-    }
-
-    /**
-     * Updates content (adds the button if is not there).
-     * This is the entry point for all page modifications.
-     */
-    update() {
-        if ($("div[aria-label='Event compose form']").is(":visible")) {
-            if(!this.isButtonPresent()) {
-                this.updateMeetingId();
-                this.addJitsiButton();
-            }
-        }
-    }
-
-    /**
-     * The event location. Currently not supported.
-     * @returns {MSLiveLocation}
-     */
-    get location() {
-        return null;
-    }
-
-    /**
-     * The button container holding jitsi button.
-     * @returns {*}
-     */
-    get buttonContainer() {
-        var container = $("span[id='MeetingCompose.LocationInputLabel']")
-            .parent().parent();
-        if(container.length == 0)
-            return null;
-        return container;
-    }
-
-    /**
-     * The event description.
-     * @returns {MSLiveDescription}
-     */
-    get description() {
-        if (!this.descriptionInstance)
-            this.descriptionInstance = new MSLiveDescription(this);
-        return this.descriptionInstance;
-    }
-
-    /**
-     * Adds the jitsi button in buttonContainer.
-     */
-    addJitsiButton() {
-        var container = this.buttonContainer;
-        if (!container)
-            return;
-
-        var description = this.description;
-
-        let newRow = $(
-            '<li>\
-                <button type="button" class="_cx_q2 o365button">\
-                    <button type="button" \
-                            class="_cx_t2 _cx_r2 o365button" \
-                            aria-labelledby="_ariaId_81"> \
-                        <span class = "_fc_3 csimg owaimg jitsi_ms_button"></span> \
-                        <span class = "_fc_4 _fc_2 ms-font-s ms-font-weight-semibold ms-font-color-themePrimary" \
-                              id = "jitsi_button"></span> \
-                    </button> \
-                </button> \
-            </li>'
-        );
-        newRow.insertAfter(container);
-        description.update(this.location);
-    }
-}
-
-/**
- * The outlook live calendar specific implementation of the description textarea
- * in the event page.
- */
-class MSLiveDescription extends Description {
-    constructor(event) {
-        super(event);
-
-        var description = $("div[aria-label='Event body'] p:first-child");
-        if (description.length == 0)
-            return;
-
-        this.element = description;
-    }
-
-    /**
-     * The html element.
-     * @returns {*}
-     */
-    get element() {
-        return this.el[0];
-    }
-
-    set element(el) {
-        this.el = el;
-    }
-
-    /**
-     * The text value of the description.
-     */
-    get value() {
-        return this.el.text();
-    }
-
-    /**
-     * Adds text to the description.
-     * @param text
-     */
-    addDescriptionText(text){
-        // format link
-        var urlRegex = /(https?:\/\/[^\s]+)/g;
-        let textToInsert = text.replace(urlRegex, function(url) {
-            return '<a href="' + url + '">' + url + '</a>';
-        });
-
-        // format new lines
-        textToInsert = textToInsert.replace(/(?:\r\n|\r|\n)/g, '<br />');
-
-        this.el.html(escapeHtml(this.value) + textToInsert);
-    }
-
-    /**
-     * Updates the initial button text and click handler when there is
-     * no meeting scheduled.
-     */
-    updateInitialButtonURL(location) {
-        let button = $('#jitsi_button');
-        button.html('Add a ' + LOCATION_TEXT);
-
-        button.parent().off('click');
-        button.parent().on('click', e => {
-            e.preventDefault();
-
-            this.clickAddMeeting(false, location);
-        });
-    }
-
-    /**
-     * Updates the url for the button.
-     */
-    updateButtonURL() {
-        try {
-            var button = $('#jitsi_button');
-            button.html("Join your " + LOCATION_TEXT + " now");
-
-            button.parent().off('click');
-            button.parent().on('click', e => {
-                e.preventDefault();
-
-                window.open(BASE_URL + this.event.meetingId, '_blank');
-            });
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
 
 /**
  * Returns the node id.
@@ -1294,8 +1075,5 @@ function checkAndUpdateCalendarG2() {
 if (document.querySelector('body').dataset.viewfamily) {
     // this is google calendar new interface
     checkAndUpdateCalendarG2();
-} else {
-    // google calendar classic or outlook
-    checkAndUpdateCalendar();
 }
 
