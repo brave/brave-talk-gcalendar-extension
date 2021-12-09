@@ -10,3 +10,11 @@ export function generateRoomWithoutSeparator() {
     .replace(/\//g, "_")
     .replace(/=/g, "");
 }
+
+export function createRoom(roomUrl: string) {
+  window.open(
+    `${roomUrl}?create_only=y`,
+    "talk_extension_popup",
+    "popup,width=600,height=920"
+  );
+}

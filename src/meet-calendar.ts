@@ -1,4 +1,4 @@
-import { generateRoomWithoutSeparator } from "./RoomnameGenerator";
+import { createRoom, generateRoomWithoutSeparator } from "./brave-talk";
 import $ from "jquery";
 
 const BASE_DOMAIN = "talk.brave.com";
@@ -7,15 +7,6 @@ const APP_NAME = "Brave Talk";
 
 //A text to be used when adding info to the location field.
 const LOCATION_TEXT = APP_NAME + " Meeting";
-
-function escapeHtml(unsafe: string) {
-  return unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 /**
  * The event page we will be updating.
@@ -33,7 +24,7 @@ abstract class EventContainer {
   private containerElement: HTMLElement | undefined;
   protected descriptionInstance: DescriptionWrapper | undefined;
   protected locationInstance: LocationWrapper | undefined;
-  private meetingId: string | undefined;
+  public meetingId: string | undefined;
   /**
    * @returns {EventContainer}
    */
@@ -84,7 +75,7 @@ abstract class EventContainer {
    * Checks for the button on current page
    */
   isButtonPresent() {
-    return $("#jitsi_button").length >= 1;
+    return document.getElementById("jitsi_button") !== null;
   }
 
   /**
@@ -188,9 +179,9 @@ abstract class LocationWrapper {
  * Represents the description of the event.
  */
 abstract class DescriptionWrapper {
-  protected event: any;
+  protected event: EventContainer;
 
-  constructor(event: any) {
+  constructor(event: EventContainer) {
     this.event = event;
   }
   /**
@@ -240,6 +231,9 @@ abstract class DescriptionWrapper {
         location.addLocationText(
           LOCATION_TEXT + " - " + BASE_URL + this.event.meetingId
         );
+
+      // and create popup the window to create the meeting room
+      createRoom(BASE_URL + this.event.meetingId);
     } else {
       this.updateButtonURL();
     }
@@ -268,53 +262,8 @@ abstract class DescriptionWrapper {
    * @param dialInID optional dial in id
    * @returns {String}
    */
-  getInviteText(dialInID?: string): string {
-    let inviteText: string;
-    let hasTemplate = false;
-
-    if (this.event.inviteTextTemplate) {
-      inviteText = this.event.inviteTextTemplate;
-      hasTemplate = true;
-    } else {
-      inviteText =
-        "Click the following link to join the meeting " +
-        "from your computer: " +
-        BASE_URL +
-        this.event.meetingId;
-    }
-
-    if (this.event.numbers && Object.keys(this.event.numbers).length > 0) {
-      if (this.event.inviteNumbersTextTemplate) {
-        inviteText += this.event.inviteNumbersTextTemplate;
-        hasTemplate = true;
-        Object.keys(this.event.numbers).forEach((key) => {
-          let value = this.event.numbers[key];
-          inviteText = inviteText.replace("{" + key + "}", key + ": " + value);
-        });
-      } else {
-        inviteText += "\n\n=====";
-        inviteText += "\n\nJust want to dial in on your phone? ";
-        inviteText += " \n\nCall one of the following numbers: ";
-        Object.keys(this.event.numbers).forEach((key) => {
-          let value = this.event.numbers[key];
-          inviteText += "\n" + key + ": " + value;
-        });
-        inviteText +=
-          "\n\nSay your conference name: '" +
-          this.event.meetingId +
-          "' and you will be connected!";
-      }
-    }
-
-    if (hasTemplate) {
-      inviteText = inviteText.replace(/\{BASE_URL\}/g, BASE_URL);
-      inviteText = inviteText.replace(/\{MEETING_ID\}/g, this.event.meetingId);
-      if (dialInID) {
-        inviteText = inviteText.replace(/\{DIALIN_ID\}/g, dialInID);
-      }
-    }
-
-    return inviteText;
+  getInviteText(): string {
+    return `Click the following link to join the meeting from your computer: ${BASE_URL}${this.event.meetingId}`;
   }
 
   /**
@@ -351,7 +300,7 @@ abstract class DescriptionWrapper {
  * The new google calendar specific implementation of the event page.
  */
 class G2Event extends EventContainer {
-  constructor(eventEditPage: HTMLElement) {
+  constructor(eventEditPage: HTMLBodyElement) {
     super();
 
     this.container = eventEditPage;
@@ -382,9 +331,8 @@ class G2Event extends EventContainer {
 
   /**
    * The event location.
-   * @returns {GLocation}
    */
-  get location() {
+  get location(): LocationWrapper {
     if (!this.locationInstance) {
       this.locationInstance = new G2Location();
     }
@@ -447,9 +395,8 @@ class G2Event extends EventContainer {
 
   /**
    * The event description.
-   * @returns {G2Description}
    */
-  get description() {
+  get description(): DescriptionWrapper {
     if (!this.descriptionInstance)
       this.descriptionInstance = new G2Description(this);
     return this.descriptionInstance;
@@ -588,13 +535,14 @@ class G2Description extends DescriptionWrapper {
     button.html("Add a " + LOCATION_TEXT);
 
     let container = this.event.buttonContainer;
+    if (container) {
+      container.parent().off("click");
+      container.parent().on("click", (e) => {
+        e.preventDefault();
 
-    container.parent().off("click");
-    container.parent().on("click", (e: MouseEvent) => {
-      e.preventDefault();
-
-      this.clickAddMeeting(false, location);
-    });
+        this.clickAddMeeting(false, location);
+      });
+    }
   }
 
   /**
@@ -607,38 +555,22 @@ class G2Description extends DescriptionWrapper {
 
       var container = this.event.buttonContainer;
 
-      container.parent().off("click");
-      container.parent().on("click", (e: MouseEvent) => {
-        e.preventDefault();
+      if (container) {
+        container.parent().off("click");
+        container.parent().on("click", (e) => {
+          e.preventDefault();
 
-        // call updateMeetingId, the case where somebody edited location
-        // and then click join now before saving
-        this.event.updateMeetingId();
+          // call updateMeetingId, the case where somebody edited location
+          // and then click join now before saving
+          this.event.updateMeetingId();
 
-        window.open(BASE_URL + this.event.meetingId, "_blank");
-      });
+          window.open(BASE_URL + this.event.meetingId, "_blank");
+        });
+      }
     } catch (e) {
       console.log(e);
     }
   }
-}
-
-/**
- * Returns the node id.
- */
-function getNodeID(name: string) {
-  return "#\\" + getNodePrefix() + "\\." + name;
-}
-
-/**
- * Returns the prefix to use for nodes.
- */
-function getNodePrefix(): string {
-  var labelNode = $("[id*='location-label']");
-  if (labelNode.length >= 1) {
-    return labelNode[0].id.split(".")[0];
-  }
-  return "";
 }
 
 /**
@@ -706,7 +638,7 @@ function checkAndUpdateCalendarG2() {
     var body = document.querySelector("body")!;
     new MutationObserver(function (mutations) {
       // the main calendar view
-      if (document.querySelector("body")?.dataset.viewfamily === "EVENT") {
+      if (body.dataset.viewfamily === "EVENT") {
         mutations.forEach(function (mutation) {
           var mel = mutation.addedNodes[0];
           var newElement = mel && (mel as HTMLElement).innerHTML;
@@ -747,7 +679,7 @@ function checkAndUpdateCalendarG2() {
               var clickHandler = container.find("#jitsi_button_quick_add");
               clickHandler.on("click", function (e) {
                 c!.scheduleAutoCreateMeeting = true;
-                $('div[role="button"][jsname="rhPddf"]').click();
+                $('div[role="button"][jsname="rhPddf"]').trigger("click");
               });
 
               return;
@@ -768,14 +700,7 @@ function checkAndUpdateCalendarG2() {
   }
 }
 
-log("Welcome from the extension!");
-
 if (document.querySelector("body")?.dataset.viewfamily) {
   // this is google calendar new interface
-  log("connecting to gcal!");
   checkAndUpdateCalendarG2();
-}
-
-function log(msg: string, ...data: any[]) {
-  console.log(msg, ...data);
 }
