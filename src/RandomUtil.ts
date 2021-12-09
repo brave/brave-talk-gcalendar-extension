@@ -10,7 +10,7 @@ var DIGITS = '0123456789';
  * @param max the maximum value for the generated number
  * @returns random int number
  */
-function randomInt(min, max) {
+function randomInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
@@ -19,7 +19,7 @@ function randomInt(min, max) {
  * @param {Array|string} arr source
  * @returns array element or string character
  */
-function randomElement(arr) {
+function randomElement(arr: string | any[]) {
     return arr[randomInt(0, arr.length -1)];
 }
 
@@ -31,11 +31,11 @@ function randomElement(arr) {
  * (num_to_check % 97) == 1
  * @param len the length.
  */
-function randomDigitString(len) {
+function randomDigitString(len: number) {
     var ret = '';
     var randomLen = len - 2;
     while (randomLen--) {
-        ret += this.randomElement(DIGITS);
+        ret += randomElement(DIGITS);
     }
     var num = parseInt(ret);
     var verifyNumber = (98 - (num * 100) % 97) % 97;
