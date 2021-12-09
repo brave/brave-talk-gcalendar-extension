@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production",
-    "watch": "webpack --mode development --devtool inline-source-map --watch"
+    "watch": "webpack --mode development --devtool inline-source-map --watch",
+    "format": "prettier --write src/",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,9 @@
     "@types/chrome": "^0.0.168",
     "@types/jquery": "^3.5.10",
     "copy-webpack-plugin": "^10.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.2",
+    "prettier": "2.5.1",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.2",
     "webpack": "^5.65.0",
@@ -27,5 +32,8 @@
   },
   "dependencies": {
     "jquery": "^3.6.0"
+  },
+  "lint-staged": {
+    "src/*.ts": "prettier --write"
   }
 }
