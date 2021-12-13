@@ -1,7 +1,7 @@
 import { createRoom, generateRoomWithoutSeparator } from "./brave-talk";
 import $ from "jquery";
 
-const BASE_DOMAIN = "talk.brave.com";
+const BASE_DOMAIN = "talk.brave.software";
 const BASE_URL = "https://" + BASE_DOMAIN + "/";
 const APP_NAME = "Brave Talk";
 
