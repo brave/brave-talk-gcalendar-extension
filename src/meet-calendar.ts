@@ -546,7 +546,11 @@ class G2Description extends DescriptionWrapper {
           // and then click join now before saving
           this.event.updateMeetingId();
 
-          window.open(BASE_URL + this.event.meetingId, "_blank");
+          window.open(
+            BASE_URL + this.event.meetingId,
+            "_blank",
+            "noopener,noreferrer"
+          );
         });
       }
     } catch (e) {
@@ -578,16 +582,8 @@ function getKeyboardEvent(eventType: string) {
  * @returns {String} the parameter value.
  */
 function findGetParameter(parameterName: string): string | null {
-  var result = null,
-    tmp = [];
-  location.search
-    .substr(1)
-    .split("&")
-    .forEach(function (item) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-    });
-  return result;
+  const params = new URLSearchParams(window.location.search);
+  return params.get(parameterName);
 }
 
 /**

@@ -15,6 +15,6 @@ export function createRoom(roomUrl: string) {
   window.open(
     `${roomUrl}?create_only=y`,
     "talk_extension_popup",
-    "popup,width=640,height=640"
+    "popup,width=640,height=640,noopener,noreferrer"
   );
 }
