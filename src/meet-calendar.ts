@@ -260,7 +260,7 @@ abstract class DescriptionWrapper {
    */
   updateInitialButtonURL(location: LocationWrapper) {
     var button = $("#jitsi_button a");
-    button.html("Add a " + LOCATION_TEXT);
+    button.text("Add a " + LOCATION_TEXT);
     button.attr("href", "#");
     button.on("click", (e) => {
       e.preventDefault();
@@ -274,7 +274,7 @@ abstract class DescriptionWrapper {
   updateButtonURL() {
     try {
       var button = $("#jitsi_button a");
-      button.html("Join your " + LOCATION_TEXT + " now");
+      button.text("Join your " + LOCATION_TEXT + " now");
       button.off("click");
       button.attr("href", BASE_URL + this.event.meetingId);
       button.attr("target", "_new");
@@ -514,7 +514,7 @@ class G2Description extends DescriptionWrapper {
    */
   updateInitialButtonURL(location: LocationWrapper) {
     let button = $("#jitsi_button");
-    button.html("Add a " + LOCATION_TEXT);
+    button.text("Add a " + LOCATION_TEXT);
 
     let container = this.event.buttonContainer;
     if (container) {
@@ -533,7 +533,7 @@ class G2Description extends DescriptionWrapper {
   updateButtonURL() {
     try {
       var button = $("#jitsi_button");
-      button.html("Join your " + LOCATION_TEXT + " now");
+      button.text("Join your " + LOCATION_TEXT + " now");
 
       var container = this.event.buttonContainer;
 
