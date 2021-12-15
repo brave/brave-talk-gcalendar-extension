@@ -1,13 +1,14 @@
 {
   "name": "brave-talk-extension",
   "version": "0.0.1",
-  "description": "Jidesha =======",
+  "description": "Brave Talk extension",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production",
     "watch": "webpack --mode development --devtool inline-source-map --watch",
     "format": "prettier --write src/",
+    "format:check": "prettier --check src/",
     "prepare": "husky install"
   },
   "repository": {
