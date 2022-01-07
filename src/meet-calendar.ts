@@ -6,7 +6,7 @@ const BASE_URL = "https://" + BASE_DOMAIN + "/";
 const APP_NAME = "Brave Talk";
 
 //A text to be used when adding info to the location field.
-const LOCATION_TEXT = APP_NAME + " Meeting";
+const LOCATION_TEXT = "Brave Talk Meeting";
 
 /**
  * The event page we will be updating.
@@ -590,7 +590,7 @@ function findGetParameter(parameterName: string): string | null {
  * Checks whether it is ok to add the button to current page
  * in case of new google calendar interface
  */
-function checkAndUpdateCalendarG2() {
+export function checkAndUpdateCalendarG2() {
   var MutationObserver = window.MutationObserver;
   var c = EventContainer.getInstance();
   if (c) {
@@ -613,17 +613,23 @@ function checkAndUpdateCalendarG2() {
     }
 
     // Listen for mutations (showing the bubble), for quick adding events
-    var body = document.querySelector("body")!;
+    console.log("adding mutation observer");
+    const body = document.body;
     new MutationObserver(function (mutations) {
+      console.log(
+        " mutation fired: view family now " + body.dataset.viewfamily
+      );
       // the main calendar view
       if (body.dataset.viewfamily === "EVENT") {
-        mutations.forEach(function (mutation) {
+        mutations.forEach((mutation) => {
           var mel = mutation.addedNodes[0];
           var newElement = mel && (mel as HTMLElement).innerHTML;
 
           if (newElement && newElement.search('role="dialog"') !== -1) {
+            console.log("role=dialog is there!");
             // skip if our button is already added
             if ($("#jitsi_button_quick_add").length != 0) {
+              console.log(" -> button already added");
               return;
             }
 
@@ -667,6 +673,7 @@ function checkAndUpdateCalendarG2() {
       } else if (
         document.querySelector("body")?.dataset.viewfamily === "EVENT_EDIT"
       ) {
+        console.log(" -> EVENT_EDIT running update!");
         c!.update();
       }
     }).observe(body, {
@@ -678,7 +685,7 @@ function checkAndUpdateCalendarG2() {
   }
 }
 
-if (document.querySelector("body")?.dataset.viewfamily) {
-  // this is google calendar new interface
-  checkAndUpdateCalendarG2();
-}
+// if (document.querySelector("body")?.dataset.viewfamily) {
+//   // this is google calendar new interface
+//   checkAndUpdateCalendarG2();
+//}
