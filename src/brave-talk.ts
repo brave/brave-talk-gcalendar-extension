@@ -11,6 +11,14 @@ export function generateRoomWithoutSeparator() {
     .replace(/=/g, "");
 }
 
+export function generateNewRoomUrl() {
+  return `https://talk.brave.com/${generateRoomWithoutSeparator()}`;
+}
+
+export function isBraveTalkUrl(text: string): boolean {
+  return text.startsWith("https://talk.brave.com/");
+}
+
 export function createRoom(roomUrl: string) {
   window.open(
     `${roomUrl}?create_only=y`,
