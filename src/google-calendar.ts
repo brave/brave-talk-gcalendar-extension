@@ -28,32 +28,32 @@ function addButtonToQuickAdd(quickAddDialog: JQuery<HTMLElement>) {
   }
   const tabEvent = quickAddDialog.find("#tabEvent");
   if (tabEvent.length) {
-    const container = $(
-      '<content class="" role="tabpanel" id="jitsi_button_quick_add_content"><div class="fy8IH poWrGb"/></content>'
-    );
-    $(tabEvent.parent()).append(container);
-
-    container.children().first().append(`
-      <div class="FkXdCf HyA7Fb">
-        <div class="DPvwYc QusFJf jitsi_quick_add_icon"/>
-      </div>`);
-
-    container.children().first().append(`
+    tabEvent.parent().append(
+      `
+    <content class="" role="tabpanel" id="jitsi_button_quick_add_content">
+      <div class="fy8IH poWrGb">
+        <div class="FkXdCf HyA7Fb">
+          <div class="DPvwYc QusFJf jitsi_quick_add_icon"/>
+        </div>
+      </div>
       <div class="mH89We">
-          <div role="button"
-              class="uArJ5e UQuaGc Y5sE8d"
-              id="jitsi_button_quick_add">
-              <content class="CwaK9">\
-                  <span class="RveJvd jitsi_quick_add_text_size">
-                      Add a Brave Talk Meeting
-                  </span>
-              </content>
-          </div>
-      </div>`);
-
-    const clickHandler = container.find("#jitsi_button_quick_add");
-    clickHandler.on("click", function (e) {
+        <div role="button"
+             class="uArJ5e UQuaGc Y5sE8d"
+             id="jitsi_button_quick_add">
+          <content class="CwaK9">
+            <span class="RveJvd jitsi_quick_add_text_size">
+              Add a Brave Talk Meeting
+            </span>
+          </content>
+        </div>
+      </div>
+    </content>
+    `
+    );
+    const clickHandler = tabEvent.find("#jitsi_button_quick_add");
+    clickHandler.on("click", (e) => {
       //TODO => c!.scheduleAutoCreateMeeting = true;
+      //
       // this is clicking the "more options" button on the quick add dialog,
       // which causes the full screen event editor to appear
       $('div[role="button"][jsname="rhPddf"]').trigger("click");

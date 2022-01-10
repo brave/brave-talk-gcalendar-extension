@@ -6,7 +6,7 @@ const BASE_URL = "https://" + BASE_DOMAIN + "/";
 const APP_NAME = "Brave Talk";
 
 //A text to be used when adding info to the location field.
-const LOCATION_TEXT = "Brave Talk Meeting";
+const LOCATION_TEXT = APP_NAME + " Meeting";
 
 /**
  * The event page we will be updating.
