@@ -1,8 +1,11 @@
-import { isGoogleCalendar, watchForChanges } from "./google-calendar";
-import $ from "jquery";
+import {
+  checkForAutoCreateMeetingFlag,
+  isGoogleCalendar,
+  watchForChanges,
+} from "./google-calendar";
 
-console.log("hello from jq", $().jquery);
 if (isGoogleCalendar()) {
-  console.log("looks like gcal 2! v3");
+  console.log("looks like gcal 2! v5");
+  checkForAutoCreateMeetingFlag();
   watchForChanges();
 }

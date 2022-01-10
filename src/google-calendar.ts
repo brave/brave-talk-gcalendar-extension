@@ -5,6 +5,13 @@ This file contains all the logic that interacts with the html of the google cale
 import $ from "jquery";
 import { createRoom, generateNewRoomUrl, isBraveTalkUrl } from "./brave-talk";
 
+// we want to automatically add the brave talk meeting to
+// the event immediately when it opens in full screen mode, in two cases:
+//  1. when the user has selected "Create Google Calendar meeting" from the extension
+//     popup window (see popup.html)
+//  2. when the user clicks "Add a brave talk meeting" from the "quick add" dialog
+let scheduleAutoCreateMeeting = false;
+
 // The "view family" is a flag set by gcal indicating what root view is currently displayed.
 // The options we are interested in are:
 //  - "EVENT" - this is the normal screen view of a calendar showing events. Within this screen
@@ -47,7 +54,7 @@ function addButtonToQuickAdd(quickAddDialog: JQuery<HTMLElement>) {
              id="jitsi_button_quick_add">
           <content class="CwaK9">
             <span class="RveJvd jitsi_quick_add_text_size">
-              Add a Brave Talk Meeting
+              Add a Brave Talk meeting
             </span>
           </content>
         </div>
@@ -56,11 +63,10 @@ function addButtonToQuickAdd(quickAddDialog: JQuery<HTMLElement>) {
     `
     );
     const clickHandler = tabEvent.parent().find("#jitsi_button_quick_add");
-    clickHandler.on("click", (e) => {
-      //TODO => c!.scheduleAutoCreateMeeting = true;
-      //
+    clickHandler.on("click", () => {
       // this is clicking the "more options" button on the quick add dialog,
       // which causes the full screen event editor to appear
+      scheduleAutoCreateMeeting = true;
       $('div[role="button"][jsname="rhPddf"]').trigger("click");
     });
   }
@@ -144,10 +150,8 @@ function getOrCreateButtonContainer(): JQuery<HTMLElement> | null {
 }
 
 async function onAddMeetingClick() {
-  console.log("add meeting clicked!");
   const newRoomUrl = generateNewRoomUrl();
   await setLocationString(newRoomUrl);
-  console.log("now creating room!");
   createRoom(newRoomUrl);
   updateToJoinMeetingButton(newRoomUrl);
 }
@@ -180,28 +184,26 @@ export function maintainButtonOnFullScreenEventEdit() {
   // we want to trigger all the logic only when we have enough elements
   // on the page, as the new interface is loading live and some elements
   // are missing when directly go the event edit page
-  // we require the notifications element and location or description
-  // element
+  // we require the notifications element and location
   if (
     $("#xNtList").length != 0 && // notifications
     ($("#xLocIn").length != 0 || // editable location
-      $("#xOnCal").length != 0 || // readonly location
-      $("#xDescIn").length != 0 || // editable description
-      $("#xDesc").length != 0) && // readonly description
+      $("#xOnCal").length != 0) &&
     !isFullScreenEventButtonPresent()
   ) {
     /// add button
-    console.log("should add button now!");
+    if (getOrCreateButtonContainer()) {
+      const currentLocation = getLocationString();
+      if (isBraveTalkUrl(currentLocation)) {
+        updateToJoinMeetingButton(currentLocation);
+      } else {
+        updateToAddMeetingButton();
 
-    const container = getOrCreateButtonContainer();
-    const currentLocation = getLocationString();
-
-    if (isBraveTalkUrl(currentLocation)) {
-      console.log("updating to join mtg");
-      updateToJoinMeetingButton(currentLocation);
-    } else {
-      console.log("updating to add mtg");
-      updateToAddMeetingButton();
+        if (scheduleAutoCreateMeeting) {
+          scheduleAutoCreateMeeting = false;
+          setTimeout(() => onAddMeetingClick(), 1000);
+        }
+      }
     }
   }
 }
@@ -221,7 +223,6 @@ export function watchForChanges() {
     }
     // in full screen event edit mode, ensure our feedback button is present
     else if (viewFamily === "EVENT_EDIT") {
-      console.log(" -> EVENT_EDIT running update!");
       maintainButtonOnFullScreenEventEdit();
     }
   };
@@ -234,4 +235,16 @@ export function watchForChanges() {
     characterData: false,
     subtree: true,
   });
+}
+
+export function checkForAutoCreateMeetingFlag(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  const autoCreateMeeting = params.get("autoCreateMeeting");
+  const extid = params.get("extid");
+  if (autoCreateMeeting && extid === chrome.runtime.id) {
+    scheduleAutoCreateMeeting = true;
+    return true;
+  }
+
+  return false;
 }
