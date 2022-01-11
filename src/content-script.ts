@@ -5,7 +5,12 @@ import {
 } from "./google-calendar";
 
 if (isGoogleCalendar()) {
-  console.log("looks like gcal 2! v5");
+  console.log(
+    `Brave Talk Google Calendar extension ${
+      chrome.runtime.getManifest().version
+    } running`
+  );
+
   checkForAutoCreateMeetingFlag();
   watchForChanges();
 }
