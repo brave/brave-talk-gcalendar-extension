@@ -98,9 +98,10 @@ async function setLocationString(newValue: string): Promise<void> {
 
     input.focus();
 
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // need to let the event loop run, so the gcal code responds to the focus
+    await new Promise((resolve) => setTimeout(resolve, 1));
 
-    document.execCommand("insertHTML", false, newValue);
+    document.execCommand("insertText", false, newValue);
     for (const type of ["keydown", "keypress", "keyup"])
       input.dispatchEvent(new KeyboardEvent(type));
   }
@@ -152,8 +153,9 @@ function getOrCreateButtonContainer(): JQuery<HTMLElement> | null {
 async function onAddMeetingClick() {
   const newRoomUrl = generateNewRoomUrl();
   await setLocationString(newRoomUrl);
-  createRoom(newRoomUrl);
   updateToJoinMeetingButton(newRoomUrl);
+
+  createRoom(newRoomUrl);
 }
 /**
  * Updates the initial button text and click handler when there is
