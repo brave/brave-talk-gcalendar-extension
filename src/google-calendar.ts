@@ -244,7 +244,12 @@ export function checkForAutoCreateMeetingFlag(): boolean {
   const autoCreateMeeting = params.get("autoCreateMeeting");
   const extid = params.get("extid");
   if (autoCreateMeeting && extid === chrome.runtime.id) {
-    scheduleAutoCreateMeeting = true;
+    /* Actually this didn't work reliably, we think because there's no user interaction
+     * on the gcal side, so it doesn't accept the programmatic editing on the event.
+     * So, for now, users get the event but then have to click the brave talk button
+     * for themselves.
+     */
+    // scheduleAutoCreateMeeting = true;
     return true;
   }
 
