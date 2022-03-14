@@ -44,7 +44,7 @@ function addButtonToQuickAdd(quickAddDialog: HTMLElement) {
     tabPanel.setAttribute("id", "jitsi_button_quick_add_content");
 
     tabPanel.innerHTML = `
-      <div class="fy8IH poWrGb"> 
+      <div class="fy8IH poWrGb">
         <div class="FkXdCf HyA7Fb">
           <div class="DPvwYc QusFJf jitsi_quick_add_icon"/>
         </div>
