@@ -232,7 +232,12 @@ export function maintainButtonOnFullScreenEventEdit() {
         updateToJoinMeetingButton(currentLocation);
       } else {
         updateToAddMeetingButton();
-
+        // chrome.storage.sync.get(['scheduleAutoCreateMeeting'], function(items) {
+        //   if (items.scheduleAutoCreateMeeting){
+        //     chrome.storage.sync.set({'scheduleAutoCreateMeeting': 'false'});
+        //     setTimeout(() => onAddMeetingClick(), 1000);
+        //   }
+        // });
         if (scheduleAutoCreateMeeting) {
           scheduleAutoCreateMeeting = false;
           setTimeout(() => onAddMeetingClick(), 1000);
@@ -295,4 +300,83 @@ export function checkForAutoCreateMeetingFlag(): boolean {
   }
 
   return false;
+}
+
+function addButtonToGmailCal(quickAddDialog: HTMLElement) {
+  // skip if our button is already added
+  if (document.querySelector("#jitsi_button_quick_add")) {
+    return;
+  }
+  const tabEvent = quickAddDialog.querySelector(".IFQP9d.n1rxgc.SFQtGf");
+  if (tabEvent) {
+    const tabPanel = document.createElement("content");
+    tabPanel.setAttribute("role", "tabpanel");
+    tabPanel.setAttribute("id", "jitsi_button_quick_add_content");
+
+    tabPanel.innerHTML = `
+      <div class="fy8IH poWrGb">
+        <div class="FkXdCf HyA7Fb">
+          <div class="DPvwYc QusFJf jitsi_quick_add_icon"/>
+        </div>
+      </div>
+      <div class="kCyAyd">
+        <div class="mH89We l4V7wb">
+          <div role="button"
+              class="uArJ5e UQuaGc Y5sE8d"
+              id="jitsi_button_quick_add">
+            <content class="CwaK9 cDfbwb">
+              <span class="Fxmcue jitsi_quick_add_text_size">
+                Add a Brave Talk meeting
+              </span>
+            </content>
+          </div>
+        </div>
+      </div>
+    `;
+
+    tabEvent.appendChild(tabPanel);
+    const clickHandler = tabEvent.parentElement?.querySelector(
+      "#jitsi_button_quick_add"
+    );
+
+    clickHandler?.addEventListener("click", onAddMeetingClick);
+    // clickHandler?.addEventListener("click", () => {
+    //   // this is clicking the "more options" button on the quick add dialog,
+    //   // which causes the full screen event editor to appear
+    //   //chrome.storage.sync.set({'scheduleAutoCreateMeeting': 'true'});
+    //   scheduleAutoCreateMeeting = true;
+    //   document
+    //     .querySelector<HTMLElement>('div[role="button"][jsname="ZkN63"]')
+    //     ?.click();
+    // });
+  }
+}
+
+export function watchForGmailCompanion() {
+  const onMutation: MutationCallback = (mutations) => {
+    // in normal calendar mode, watch for the quick add popup
+    mutations.forEach((mutation) => {
+      let dlg;
+      mutation.addedNodes.forEach((node) => {
+        const el =
+          node instanceof HTMLElement && node.querySelector("[role='dialog']");
+        if (el) {
+          dlg = el;
+          return;
+        }
+      });
+      if (dlg) {
+        addButtonToGmailCal(dlg);
+      }
+    });
+  };
+
+  const watcher = new MutationObserver(onMutation);
+
+  watcher.observe(document.body, {
+    attributes: false,
+    childList: true,
+    characterData: false,
+    subtree: true,
+  });
 }
