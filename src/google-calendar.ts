@@ -80,7 +80,7 @@ function addButtonToQuickAdd(quickAddDialog: HTMLElement) {
     );
     clickHandler?.addEventListener("click", () => {
       // setting the scheduleAutoCreateMeeting flag in local storage
-      window.chrome.storage.sync.set({ scheduleAutoCreateMeeting: "true" });
+      window?.chrome?.storage?.sync?.set({ scheduleAutoCreateMeeting: "true" });
       // this is clicking the "more options" button on the quick add dialog,
       // which causes the full screen event editor to appear
       document
@@ -234,11 +234,11 @@ export function maintainButtonOnFullScreenEventEdit() {
       } else {
         updateToAddMeetingButton();
         // check for scheduleAutoCreateMeeting flag in local storage
-        window.chrome.storage.sync.get(
+        window?.chrome?.storage?.sync?.get(
           ["scheduleAutoCreateMeeting"],
           function (items) {
             if (items.scheduleAutoCreateMeeting == "true") {
-              window.chrome.storage.sync.set({
+              window?.chrome?.storage?.sync?.set({
                 scheduleAutoCreateMeeting: "false",
               });
               setTimeout(() => onAddMeetingClick(), 1000);
@@ -345,7 +345,7 @@ function addButtonToGmailCal(quickAddDialog: HTMLElement) {
     // clickHandler?.addEventListener("click", onAddMeetingClick);
     clickHandler?.addEventListener("click", () => {
       // this is setting the scheduleAutoCreateMeeting in local storage
-      window.chrome.storage.sync.set({ scheduleAutoCreateMeeting: "true" });
+      window?.chrome?.storage?.sync?.set({ scheduleAutoCreateMeeting: "true" });
       // this is clicking the "Edit in calendar" button on the top-right corner,
       // which causes the full screen event editor to appear
       document

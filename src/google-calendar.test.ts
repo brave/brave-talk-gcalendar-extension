@@ -2,9 +2,6 @@ import * as gcal from "./google-calendar";
 import fs from "fs";
 import path from "path";
 
-window.chrome.storage.sync.set = jest.fn();
-window.chrome.storage.sync.get = jest.fn();
-
 function waitForMutationObserversToFire(): Promise<void> {
   return new Promise((resolve) => process.nextTick(resolve));
 }
