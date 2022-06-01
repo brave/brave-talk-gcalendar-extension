@@ -3,6 +3,10 @@ This file contains all the logic that interacts with the html of the google cale
  */
 
 import { createRoom, generateNewRoomUrl, isBraveTalkUrl } from "./brave-talk";
+import {
+  buildQuickAddButton,
+  buildFullScreenAddButton,
+} from "./brave-talk-button";
 
 // we want to automatically add the brave talk meeting to
 // the event immediately when it opens in full screen mode, in two cases:
@@ -44,26 +48,7 @@ function addButtonToQuickAdd(quickAddDialog: HTMLElement) {
     tabPanel.setAttribute("role", "tabpanel");
     tabPanel.setAttribute("id", "jitsi_button_quick_add_content");
 
-    tabPanel.innerHTML = `
-      <div class="fy8IH poWrGb">
-        <div class="FkXdCf HyA7Fb">
-          <div class="DPvwYc QusFJf jitsi_quick_add_icon"/>
-        </div>
-      </div>
-      <div class="kCyAyd">
-        <div class="mH89We l4V7wb">
-          <div role="button"
-              class="uArJ5e UQuaGc Y5sE8d"
-              id="jitsi_button_quick_add">
-            <content class="CwaK9 cDfbwb">
-              <span class="Fxmcue jitsi_quick_add_text_size">
-                Add a Brave Talk meeting
-              </span>
-            </content>
-          </div>
-        </div>
-      </div>
-    `;
+    buildQuickAddButton(tabPanel);
 
     // if we can insert just before "descrption", lets do so,
     // otherwise just append at the bottom of the tab
@@ -147,25 +132,7 @@ function getOrCreateButtonContainer(): HTMLElement | Element | null {
 
   const buttonRow = document.createElement("div");
   buttonRow.className = "FrSOzf";
-  buttonRow.innerHTML = `
-      <div class="tzcF6">
-        <div class="DPvwYc jitsi_edit_page_icon"></div>
-      </div>
-      <div class="j3nyw">
-        <div class="BY5aAd">
-          <div role="button"
-               class="uArJ5e UQuaGc Y5sE8d"
-               id="jitsi_button_container">
-            <content class="CwaK9">
-              <div id="jitsi_button" 
-                  class="goog-inline-block jfk-button jfk-button-action jfk-button-clear-outline">
-                <a href="#" style="color: white"></a>
-              </div>
-            </content>
-          </div>
-        </div>
-      </div>
-  `;
+  buildFullScreenAddButton(buttonRow);
 
   neighbor.parentElement?.insertBefore(buttonRow, neighbor);
 
@@ -316,26 +283,7 @@ function addButtonToGmailCal(quickAddDialog: HTMLElement) {
     tabPanel.setAttribute("role", "tabpanel");
     tabPanel.setAttribute("id", "jitsi_button_quick_add_content");
 
-    tabPanel.innerHTML = `
-      <div class="fy8IH poWrGb">
-        <div class="FkXdCf HyA7Fb">
-          <div class="DPvwYc QusFJf jitsi_quick_add_icon"/>
-        </div>
-      </div>
-      <div class="kCyAyd">
-        <div class="mH89We l4V7wb">
-          <div role="button"
-              class="uArJ5e UQuaGc Y5sE8d"
-              id="jitsi_button_quick_add">
-            <content class="CwaK9 cDfbwb">
-              <span class="Fxmcue jitsi_quick_add_text_size">
-                Add a Brave Talk meeting
-              </span>
-            </content>
-          </div>
-        </div>
-      </div>
-    `;
+    buildQuickAddButton(tabPanel);
 
     tabEvent.appendChild(tabPanel);
     const clickHandler = tabEvent.parentElement?.querySelector(
