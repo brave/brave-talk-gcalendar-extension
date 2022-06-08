@@ -3,13 +3,18 @@ This file contains all the logic that interacts with the html of the google cale
  */
 
 import { createRoom, generateNewRoomUrl, isBraveTalkUrl } from "./brave-talk";
+import {
+  buildQuickAddButton,
+  buildFullScreenAddButton,
+} from "./brave-talk-button";
 
 // we want to automatically add the brave talk meeting to
 // the event immediately when it opens in full screen mode, in two cases:
 //  1. when the user has selected "Create Google Calendar meeting" from the extension
 //     popup window (see popup.html)
 //  2. when the user clicks "Add a brave talk meeting" from the "quick add" dialog
-let scheduleAutoCreateMeeting = false;
+//  3. when user clicks on the gmail-calendar companion
+// we are using local storage scheduleAutoCreateMeeting flag
 
 // The "view family" is a flag set by gcal indicating what root view is currently displayed.
 // The options we are interested in are:
@@ -43,26 +48,7 @@ function addButtonToQuickAdd(quickAddDialog: HTMLElement) {
     tabPanel.setAttribute("role", "tabpanel");
     tabPanel.setAttribute("id", "jitsi_button_quick_add_content");
 
-    tabPanel.innerHTML = `
-      <div class="fy8IH poWrGb">
-        <div class="FkXdCf HyA7Fb">
-          <div class="DPvwYc QusFJf jitsi_quick_add_icon"/>
-        </div>
-      </div>
-      <div class="kCyAyd">
-        <div class="mH89We l4V7wb">
-          <div role="button"
-              class="uArJ5e UQuaGc Y5sE8d"
-              id="jitsi_button_quick_add">
-            <content class="CwaK9 cDfbwb">
-              <span class="Fxmcue jitsi_quick_add_text_size">
-                Add a Brave Talk meeting
-              </span>
-            </content>
-          </div>
-        </div>
-      </div>
-    `;
+    buildQuickAddButton(tabPanel);
 
     // if we can insert just before "descrption", lets do so,
     // otherwise just append at the bottom of the tab
@@ -78,9 +64,10 @@ function addButtonToQuickAdd(quickAddDialog: HTMLElement) {
       "#jitsi_button_quick_add"
     );
     clickHandler?.addEventListener("click", () => {
+      // setting the scheduleAutoCreateMeeting flag in local storage
+      window?.chrome?.storage?.sync?.set({ scheduleAutoCreateMeeting: "true" });
       // this is clicking the "more options" button on the quick add dialog,
       // which causes the full screen event editor to appear
-      scheduleAutoCreateMeeting = true;
       document
         .querySelector<HTMLElement>('div[role="button"][jsname="rhPddf"]')
         ?.click();
@@ -111,7 +98,6 @@ async function setLocationString(newValue: string): Promise<void> {
   const input = document.querySelector(
     "#xLocIn input[jsname=YPqjbf][role=combobox]"
   );
-
   if (input instanceof HTMLElement) {
     // inspired by
     //  https://stackoverflow.com/questions/64094461/edit-descrption-or-location-of-google-calendar-event-with-chrome-extension
@@ -119,7 +105,7 @@ async function setLocationString(newValue: string): Promise<void> {
     input.focus();
 
     // need to let the event loop run, so the gcal code responds to the focus
-    await new Promise((resolve) => setTimeout(resolve, 1));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     document.execCommand("insertText", false, newValue);
     for (const type of ["keydown", "keypress", "keyup"])
@@ -146,25 +132,7 @@ function getOrCreateButtonContainer(): HTMLElement | Element | null {
 
   const buttonRow = document.createElement("div");
   buttonRow.className = "FrSOzf";
-  buttonRow.innerHTML = `
-      <div class="tzcF6">
-        <div class="DPvwYc jitsi_edit_page_icon"></div>
-      </div>
-      <div class="j3nyw">
-        <div class="BY5aAd">
-          <div role="button"
-               class="uArJ5e UQuaGc Y5sE8d"
-               id="jitsi_button_container">
-            <content class="CwaK9">
-              <div id="jitsi_button" 
-                  class="goog-inline-block jfk-button jfk-button-action jfk-button-clear-outline">
-                <a href="#" style="color: white"></a>
-              </div>
-            </content>
-          </div>
-        </div>
-      </div>
-  `;
+  buildFullScreenAddButton(buttonRow);
 
   neighbor.parentElement?.insertBefore(buttonRow, neighbor);
 
@@ -232,11 +200,18 @@ export function maintainButtonOnFullScreenEventEdit() {
         updateToJoinMeetingButton(currentLocation);
       } else {
         updateToAddMeetingButton();
-
-        if (scheduleAutoCreateMeeting) {
-          scheduleAutoCreateMeeting = false;
-          setTimeout(() => onAddMeetingClick(), 1000);
-        }
+        // check for scheduleAutoCreateMeeting flag in local storage
+        window?.chrome?.storage?.sync?.get(
+          ["scheduleAutoCreateMeeting"],
+          function (items) {
+            if (items.scheduleAutoCreateMeeting == "true") {
+              window?.chrome?.storage?.sync?.set({
+                scheduleAutoCreateMeeting: "false",
+              });
+              setTimeout(() => onAddMeetingClick(), 1000);
+            }
+          }
+        );
       }
     }
   }
@@ -295,4 +270,64 @@ export function checkForAutoCreateMeetingFlag(): boolean {
   }
 
   return false;
+}
+
+function addButtonToGmailCal(quickAddDialog: HTMLElement) {
+  // skip if our button is already added
+  if (document.querySelector("#jitsi_button_quick_add")) {
+    return;
+  }
+  const tabEvent = quickAddDialog.querySelector(".IFQP9d.n1rxgc.SFQtGf");
+  if (tabEvent) {
+    const tabPanel = document.createElement("content");
+    tabPanel.setAttribute("role", "tabpanel");
+    tabPanel.setAttribute("id", "jitsi_button_quick_add_content");
+
+    buildQuickAddButton(tabPanel);
+
+    tabEvent.appendChild(tabPanel);
+    const clickHandler = tabEvent.parentElement?.querySelector(
+      "#jitsi_button_quick_add"
+    );
+
+    // clickHandler?.addEventListener("click", onAddMeetingClick);
+    clickHandler?.addEventListener("click", () => {
+      // this is setting the scheduleAutoCreateMeeting in local storage
+      window?.chrome?.storage?.sync?.set({ scheduleAutoCreateMeeting: "true" });
+      // this is clicking the "Edit in calendar" button on the top-right corner,
+      // which causes the full screen event editor to appear
+      document
+        .querySelector<HTMLElement>('div[role="button"][jsname="ZkN63"]')
+        ?.click();
+    });
+  }
+}
+
+export function watchForGmailCompanion() {
+  const onMutation: MutationCallback = (mutations) => {
+    // in gamil calendar mode, watch for the quick add popup
+    mutations.forEach((mutation) => {
+      let dlg;
+      mutation.addedNodes.forEach((node) => {
+        const el =
+          node instanceof HTMLElement && node.querySelector("[role='dialog']");
+        if (el) {
+          dlg = el;
+          return;
+        }
+      });
+      if (dlg) {
+        addButtonToGmailCal(dlg);
+      }
+    });
+  };
+
+  const watcher = new MutationObserver(onMutation);
+
+  watcher.observe(document.body, {
+    attributes: false,
+    childList: true,
+    characterData: false,
+    subtree: true,
+  });
 }

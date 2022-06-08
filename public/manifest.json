@@ -9,7 +9,7 @@
     "48": "brave_talk_icon_48x.png",
     "128": "brave_talk_icon_128x.png"
   },
-  "permissions": [],
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": [
@@ -21,7 +21,7 @@
       "css": [
         "all.css"
       ],
-      "all_frames": false,
+      "all_frames": true,
       "run_at": "document_end"
     }
   ],
