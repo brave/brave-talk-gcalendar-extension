@@ -68,11 +68,29 @@ function addButtonToQuickAdd(quickAddDialog: HTMLElement) {
       window?.chrome?.storage?.sync?.set({ scheduleAutoCreateMeeting: "true" });
       // this is clicking the "more options" button on the quick add dialog,
       // which causes the full screen event editor to appear
-      document
-        .querySelector<HTMLElement>('div[role="button"][jsname="rhPddf"]')
-        ?.click();
+      findMoreOptionsButton()?.click();
     });
   }
+}
+
+function findMoreOptionsButton(): HTMLElement | undefined {
+  const potentialSelectors = [
+    // orignal version
+    'div[role="button"][jsname="rhPddf"]',
+    // updated as of 24 Aug 2022
+    'button[jsname="rhPddf"]',
+  ];
+
+  for (const selector of potentialSelectors) {
+    const button = document.querySelector<HTMLElement>(selector);
+    if (button) {
+      return button;
+    }
+  }
+
+  console.warn("brave-talk-gcalendar-extension: More Options button not found");
+
+  return undefined;
 }
 
 /*
