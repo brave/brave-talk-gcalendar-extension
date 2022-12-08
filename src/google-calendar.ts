@@ -37,7 +37,7 @@ export function isGoogleCalendar(): boolean {
 // The "quick add" screen is the inline event creation dialog,
 // invoked usually by clicking the "create +" button. We add a button
 // here, and get it to invoke the full-screen "edit" mode where the full functionaltiy is.
-function addButtonToQuickAdd(quickAddDialog: HTMLElement) {
+function addButtonToQuickAdd(quickAddDialog: Element) {
   // skip if our button is already added
   if (document.querySelector("#jitsi_button_quick_add")) {
     return;
@@ -242,19 +242,15 @@ export function watchForChanges() {
     // in normal calendar mode, watch for the quick add popup
     if (viewFamily === "EVENT") {
       mutations.forEach((mutation) => {
-        let dlg;
         mutation.addedNodes.forEach((node) => {
           const el =
             node instanceof HTMLElement &&
             node.querySelector("[role='dialog']");
           if (el) {
-            dlg = el;
+            window.setTimeout(() => addButtonToQuickAdd(el), 500);
             return;
           }
         });
-        if (dlg) {
-          addButtonToQuickAdd(dlg);
-        }
       });
     }
     // in full screen event edit mode, ensure our feedback button is present
