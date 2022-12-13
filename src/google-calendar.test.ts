@@ -33,33 +33,6 @@ it("should report the view family", () => {
   expect(gcal.getViewFamily()).toEqual("EVENT_EDIT");
 });
 
-it("should add button to quick add dialog", async () => {
-  document.body.outerHTML = `<body data-viewfamily="EVENT">This looks like google calendar</body>`;
-  expect(document.getElementById("jitsi_button_quick_add")).toBeNull();
-
-  gcal.watchForChanges();
-
-  expect(document.getElementById("jitsi_button_quick_add")).toBeNull();
-
-  // in real life, gcal ads a node with a dialog deep down inside
-  const dialog = document.createElement("div");
-  dialog.innerHTML = `
-    <div role="dialog">
-      <span>This is the quick add dialog</span>
-      <div id="tabEvent">
-        This tab shows event details
-      </div>
-    </div>
-  `;
-  document.body.appendChild(dialog);
-
-  // give the mutation observer a chance to run
-  await waitForMutationObserversToFire();
-
-  // we now expect the button to have been added to the quick add dialog
-  expect(document.getElementById("jitsi_button_quick_add")).not.toBeNull();
-});
-
 it("should add 'Add Brave Talk' button to full screen event edit if location is not currently brave talk", async () => {
   document.body.outerHTML = '<body data-viewfamily="EVENT_EDIT"></body>';
 
