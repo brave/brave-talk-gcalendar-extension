@@ -42,7 +42,7 @@ function addButtonToQuickAdd(quickAddDialog: Element) {
   if (document.querySelector("#jitsi_button_quick_add")) {
     return;
   }
-  const tabEvent = quickAddDialog.querySelector("#tabEvent");
+  const tabEvent = quickAddDialog.querySelector("[aria-labelledby=tabEvent]");
   if (tabEvent) {
     const tabPanel = document.createElement("content");
     tabPanel.setAttribute("role", "tabpanel");
@@ -242,11 +242,32 @@ export function watchForChanges() {
     // in normal calendar mode, watch for the quick add popup
     if (viewFamily === "EVENT") {
       mutations.forEach((mutation) => {
+        /**
+         * TODO (Sampson): Listen also for attribute changes.
+         * When the user switches from the "Event" tab to the
+         * "Tasks" tab, then back to "Event", no nodes are
+         * added. Instead, the visibility of the existing
+         * Event node is toggled.
+         *
+         * There exists a bug now where opening the dialog
+         * too soon after page-load can result in the button
+         * being added, then promptly removed. I suspect this
+         * is due to the view of the dialog being refreshed
+         * after it has already been opened. Listening for
+         * attribute changes may help us to avoid getting
+         * dropped when the component is refreshed.
+         */
         mutation.addedNodes.forEach((node) => {
           const el =
             node instanceof HTMLElement &&
             node.querySelector("[role='dialog']");
           if (el) {
+            /**
+             * TODO (Sampson): Revisit to take an alternative
+             * approach here. Rather than use a timeout, we
+             * can instead poll the DOM for the presence of
+             * expected elements (e.g. `waitForSelector`).
+             */
             window.setTimeout(() => addButtonToQuickAdd(el), 500);
             return;
           }
@@ -310,9 +331,7 @@ function addButtonToGmailCal(quickAddDialog: HTMLElement) {
       window?.chrome?.storage?.sync?.set({ scheduleAutoCreateMeeting: "true" });
       // this is clicking the "Edit in calendar" button on the top-right corner,
       // which causes the full screen event editor to appear
-      document
-        .querySelector<HTMLElement>('div[role="button"][jsname="ZkN63"]')
-        ?.click();
+      document.querySelector<HTMLElement>('button[jsname="ZkN63"]')?.click();
     });
   }
 }
