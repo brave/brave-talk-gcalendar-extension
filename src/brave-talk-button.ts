@@ -2,85 +2,139 @@
  * Generates the brave-talk button for all three calendar views
  */
 
-/** 
- * --Prior Logic-- 
- * tabPanel.innerHTML = `
-    <div class="fy8IH poWrGb">
-        <div class="FkXdCf HyA7Fb">
-          <div class="DPvwYc QusFJf jitsi_quick_add_icon"/>
-        </div>
-      <div class="kCyAyd">
-        <div class="mH89We l4V7wb">
-          <div role="button"
-              class="uArJ5e UQuaGc Y5sE8d"
-              id="jitsi_button_quick_add">
-            <content class="CwaK9 cDfbwb">
-              <span class="Fxmcue jitsi_quick_add_text_size">
-                Add a Brave Talk meeting
-              </span>
-            </content>
-          </div>
-        </div>
-      </div>
-    </div>
-    `
-*/
-export function buildQuickAddButton(tabPanel: HTMLElement) {
-  const mainDiv1 = document.createElement("div");
-  mainDiv1.setAttribute("class", "fy8IH poWrGb");
-  tabPanel.append(mainDiv1);
+function tryCloneMeetEntry() {
+  /**
+   * To ensure the button is styled appropriately, we will
+   * clone the existing Google Meet button, and modify its
+   * contents and attributes to our needs.
+   *
+   * A slightly more verbose selector is used to avoid any
+   * reliance on generated-values (e.g. jsname='abc123')
+   * which may change more frequently than the structure.
+   *
+   * TODO (Sampson): Make this work with GMail Companion.
+   */
+  const selector =
+    "[data-expandable] ~ div:has(img[src*='logo_meet']):has(button)";
+  const meetEntry = document.querySelector(selector);
 
-  // adding brave-talk logo
-  const logoDiv2 = document.createElement("div");
-  logoDiv2.setAttribute("class", "FkXdCf HyA7Fb");
-  mainDiv1.append(logoDiv2);
-  const logodDiv3 = document.createElement("div");
-  logodDiv3.setAttribute("class", "DPvwYc QusFJf jitsi_quick_add_icon");
-  logoDiv2.append(logodDiv3);
-  // adding brave-talk button
-  const btnDiv1 = document.createElement("div");
-  btnDiv1.setAttribute("class", "kCyAyd");
-  mainDiv1.append(btnDiv1);
-  const btnDiv2 = document.createElement("div");
-  btnDiv2.setAttribute("class", "mH89We l4V7wb");
-  btnDiv1.append(btnDiv2);
-  const btnDiv3 = document.createElement("div");
-  btnDiv3.setAttribute("class", "uArJ5e UQuaGc Y5sE8d");
-  btnDiv3.setAttribute("role", "button");
-  btnDiv3.setAttribute("id", "jitsi_button_quick_add");
-  btnDiv2.append(btnDiv3);
-  const btnContent4 = document.createElement("content");
-  btnContent4.setAttribute("class", "CwaK9 cDfbwb");
-  btnDiv3.append(btnContent4);
-  const btnSpan5 = document.createElement("span");
-  btnSpan5.setAttribute("class", "Fxmcue jitsi_quick_add_text_size");
-  btnSpan5.innerText = "Add a Brave Talk meeting";
-  btnContent4.append(btnSpan5);
+  if (meetEntry instanceof HTMLElement) {
+    const talkEntry = meetEntry.cloneNode(true) as HTMLElement;
+
+    // Update image and button label
+    const image = talkEntry.querySelector("img");
+    const button = talkEntry.querySelector("button");
+    const label = button?.querySelector("span");
+
+    // We require both the image and button to be present
+    if (image instanceof HTMLElement && button instanceof HTMLElement) {
+      // This ID is used to bind the click handler
+      button.id = "jitsi_button_quick_add";
+      image.src = chrome.runtime.getURL("brave_talk_icon.svg");
+
+      // TODO (Sampson): Localize this string
+      const labelText = "Add a Brave Talk meeting";
+      if (label instanceof HTMLElement) {
+        label.textContent = labelText;
+      } else {
+        button.textContent = labelText;
+      }
+
+      // Remove all js* attributes
+      const elements = talkEntry.querySelectorAll("*");
+
+      for (const item of [talkEntry, ...Array.from(elements)]) {
+        for (const attribute of Array.from(item.attributes)) {
+          if (attribute.name.startsWith("js")) {
+            item.removeAttribute(attribute.name);
+          }
+        }
+      }
+
+      return talkEntry;
+    }
+  }
+
+  return false;
 }
 
-/** 
- * --Prior Logic-- 
- * buttonRow.innerHTML = `
-      <div class="tzcF6">
-        <div class="DPvwYc jitsi_edit_page_icon"></div>
-      </div>
-      <div class="j3nyw">
-        <div class="BY5aAd">
-          <div role="button"
-               class="uArJ5e UQuaGc Y5sE8d"
-               id="jitsi_button_container">
-            <content class="CwaK9">
-              <div id="jitsi_button" 
-                  class="goog-inline-block jfk-button jfk-button-action jfk-button-clear-outline">
-                <a href="#" style="color: white"></a>
-              </div>
-            </content>
-          </div>
-        </div>
-      </div>
-  `;
-*/
+export function buildQuickAddButton(tabPanel: HTMLElement) {
+  /**
+   * We'll initially try to clone the Google Meet
+   * button to match its structure and styling.
+   */
+  const talkEntry = tryCloneMeetEntry();
 
+  if (talkEntry instanceof HTMLElement) {
+    console.log("Successfully cloned Meet button");
+    tabPanel.append(talkEntry);
+    return;
+  }
+
+  /**
+   * We'll fall-back to what the button looked
+   * like most recently (as of 2023-06-21). We
+   * have no assurance that any of these class
+   * names will remain stable.
+   */
+
+  console.log("Clone failure. Falling back to last-known button.");
+
+  // prettier-ignore
+  const element = el( "div", { class: "m2hqkd" },
+    el("div", { class: "fy8IH xI9Bs FrRgdd" },
+      el("div", { class: "FkXdCf HyA7Fb" },
+        el("i", { class: "google-material-icons meh4fc hggPq GyffFb", "aria-hidden": "true" },
+          el("div", {},
+            el("img", { class: "Gxo8Ie", src: chrome.runtime.getURL("brave_talk_icon.svg"), "aria-hidden": "true" })))),
+      el("div", { class: "tsUyod XsN7kf", "data-dragsource-ignore": "true" },
+        el("div", { class: "lulit" },
+          el("div", { class: "d27AIf z5I5rf s2r4Od", "data-in-bubble": "true" },
+            el("div", { class: "oJeWuf" },
+              el("div", { class: "emaTS yLISWd" },
+                el("div", { class: "Kh5Sib FAE19b", "data-use-button-for-single-solution": "true" },
+                  el("button", { class: "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ nCP5yc AjY5Oe DuMIQc LQeN7 JTAoxf Z1uZib",
+                    id: "jitsi_button_quick_add",
+                    "data-idom-class": "nCP5yc AjY5Oe DuMIQc LQeN7 JTAoxf Z1uZib",
+                    "data-solution": "W1szXV0." },
+                    el("div", { class: "VfPpkd-Jh9lGc" }),
+                    el("div", { class: "VfPpkd-J1Ukfc-LhBDec" }),
+                    el("span", { class: "VfPpkd-vQzf8d" },
+                      "Add a Brave Talk meeting"
+                    )))),
+              el("div", { class: "jekkF x5Urbb" })))))));
+
+  tabPanel.appendChild(element);
+}
+
+function el(
+  tag: keyof HTMLElementTagNameMap,
+  attrs: Record<string, string>,
+  ...children: any[]
+): HTMLElement {
+  const element = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    element.setAttribute(key, value);
+  }
+  for (const child of children) {
+    if (typeof child === "string") {
+      element.appendChild(document.createTextNode(child));
+    } else {
+      element.appendChild(child);
+    }
+  }
+  return element;
+}
+
+/**
+ * TODO (Sampson): Revisit to see if we can
+ * combine this and buildQuickAddButton into
+ * a single function.
+ *
+ * At the very least, we need to update the
+ * class names used here, as well as localize
+ * the strings.
+ */
 export function buildFullScreenAddButton(buttonRow: HTMLElement) {
   // adding brave-talk logo
   const logoDiv1 = document.createElement("div");
