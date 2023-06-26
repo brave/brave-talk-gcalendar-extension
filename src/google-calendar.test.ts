@@ -49,7 +49,7 @@ it("should add 'Add Brave Talk' button to full screen event edit if location is 
 
   const link = el?.getElementsByTagName("a")[0];
   expect(link?.outerHTML).toMatchInlineSnapshot(
-    `"<a href=\\"#\\" style=\\"color: white\\">Add a Brave Talk meeting</a>"`
+    `"<a href="#" style="color: white">Add a Brave Talk meeting</a>"`
   );
 });
 
@@ -69,6 +69,6 @@ it("should add 'Join Brave Talk' button to full screen event edit if location is
 
   const link = el?.getElementsByTagName("a")[0];
   expect(link?.outerHTML).toMatchInlineSnapshot(
-    `"<a href=\\"https://talk.brave.com/yzd4Zi1B5Gf48m4X_TsNrDZSmTCdIhAvJ10Wz5gh4FA\\" style=\\"color: white\\" target=\\"_new\\">Join your Brave Talk meeting now</a>"`
+    `"<a href="https://talk.brave.com/yzd4Zi1B5Gf48m4X_TsNrDZSmTCdIhAvJ10Wz5gh4FA" style="color: white" target="_new">Join your Brave Talk meeting now</a>"`
   );
 });
