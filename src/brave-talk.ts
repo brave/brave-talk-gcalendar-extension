@@ -25,11 +25,11 @@ export function findTalkUrlInString(text: string): string | null {
 }
 
 export function generateNewRoomUrl() {
-  return `https://talk.brave.com/${generateRoomWithoutSeparator()}`;
+  return `${TALK_BASE_URL}/${generateRoomWithoutSeparator()}`;
 }
 
 export function isBraveTalkUrl(text: string): boolean {
-  return text.startsWith("https://talk.brave.com/");
+  return text.startsWith(`${TALK_BASE_URL}/`);
 }
 
 /**
@@ -75,9 +75,7 @@ export function openWindow(url: string, name: string, features: string): void {
 }
 
 export function createRoom(roomUrl: string) {
-  window.open(
-    `${roomUrl}?create_only=y`,
-    "talk_extension_popup",
-    "popup,width=320,height=480,noopener,noreferrer"
-  );
+  const createUrl = `${roomUrl}?create_only=y`;
+  const features = `popup,noopener,noreferrer,width=320,height=480`;
+  openWindow(createUrl, POPUP_WINDOW_NAME, features);
 }

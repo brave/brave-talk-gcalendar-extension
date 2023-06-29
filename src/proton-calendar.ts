@@ -31,7 +31,9 @@ export function handleButtonClick(event: Event): void {
     if (roomUrl) {
       BraveTalk.joinRoom(roomUrl);
     } else {
-      setLocation(dialog, BraveTalk.generateNewRoomUrl());
+      const roomUrl = BraveTalk.generateNewRoomUrl();
+      BraveTalk.createRoom(roomUrl);
+      setLocation(dialog, roomUrl);
       updateBoxState(dialog, ButtonStates.JOIN);
     }
   }
