@@ -1,0 +1,26 @@
+{
+    "extName": {
+        "message": "Brave Talk for Google Calendar",
+        "description": "Name of the extension"
+    },
+    "extDescription": {
+        "message": "Schedule Brave Talk meetings directly from Google Calendar",
+        "description": "Description of the extension"
+    },
+    "popupTitle": {
+        "message": "Create Brave Talk Meetings",
+        "description": "Default title of our extension popup window"
+    },
+    "labelAddMeeting": {
+        "message": "Add a Brave Talk meeting",
+        "description": "Label for the button to add a Brave Talk meeting"
+    },
+    "labelJoinMeeting": {
+        "message": "Join Brave Talk meeting",
+        "description": "Label for the button to join a Brave Talk meeting"
+    },
+    "iconAltText": {
+        "message": "Brave Talk",
+        "description": "Alt text for the Brave Talk icon"
+    }
+}
