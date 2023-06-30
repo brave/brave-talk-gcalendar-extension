@@ -1,3 +1,115 @@
+import { debug } from "./debug";
+
+export async function clickElement(
+  selector: string,
+  delay: number = 0
+): Promise<void> {
+  if (!isValidSelector(selector)) {
+    throw new Error(`Invalid selector: ${selector}`);
+  }
+
+  const element = await waitForSelector(selector);
+
+  if (!element) {
+    throw new Error(`${selector} not found`);
+  }
+
+  if (delay > 0) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  /**
+   * TODO (Sampson): We may need to simulate various
+   * click-related events here.
+   */
+  (element as HTMLElement).click();
+
+  debug(`Clicked ${selector}`);
+}
+
+export function waitForSelector(
+  selector: string,
+  maxtime: number = 3_000,
+  container: Element = document.body
+): Promise<Element> {
+  return new Promise((resolve, reject) => {
+    if (container instanceof Element === false) {
+      reject("Invalid container");
+      return;
+    }
+
+    let node;
+
+    /**
+     * If the desired element is already present, we can
+     * resolve the promise immediately.
+     */
+    if ((node = container.querySelector(selector))) {
+      resolve(node);
+      return;
+    }
+
+    const observer = new MutationObserver((mutations, observer) => {
+      /**
+       * We only need to scan the container itself, not necessarily
+       * the addedNodes themselves.
+       */
+      if ((node = container.querySelector(selector))) {
+        observer.disconnect();
+        resolve(node);
+      }
+    });
+
+    observer.observe(container, {
+      childList: true,
+      subtree: true,
+    });
+
+    /**
+     * If we haven't found the element after our `maxtime`,
+     * then we'll disconnect our observer and reject the promise.
+     */
+    setTimeout(() => {
+      observer.disconnect();
+      reject("Timeout waiting for selector");
+    }, maxtime);
+  });
+}
+
+export function isValidSelector(selector: string): boolean {
+  try {
+    document.querySelector(selector);
+    return true;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return false;
+    }
+    throw error;
+  }
+}
+
+export const focusEventMapping = {
+  blur: ["blur", "focusout"],
+  focus: ["focus", "focusin"],
+};
+
+export function simulateFocusEvents(
+  element: HTMLElement,
+  type: keyof typeof focusEventMapping
+): void {
+  /**
+   * We're gratuitously simulating FocusEvents to make
+   * sure the Calendar's state gets updated. We're not
+   * always going to know which events the Calendar is
+   * listening to, to trigger internal state changes, so
+   * we'll simulate quite a few of them.
+   */
+  const events = focusEventMapping[type] || [];
+
+  for (const eventType of events) {
+    element.dispatchEvent(new FocusEvent(eventType, { bubbles: true }));
+  }
+}
 /**
  *
  * @param tag Tag name of the element to create.
@@ -35,7 +147,7 @@ export function createElement(
 export function createElement(
   tag: keyof HTMLElementTagNameMap,
   attributes: Record<string, string>,
-  children: any[]
+  children?: any[]
 ): HTMLElement;
 
 export function createElement(
@@ -58,12 +170,12 @@ export function createElement(
 
   if (attributes) {
     for (const [key, value] of Object.entries(attributes)) {
-      element.setAttribute(key, value);
+      element.setAttribute(key, value as string);
     }
   }
 
   if (children) {
-    for (const child of Object.values(children)) {
+    for (const child of Object.values(children as any[])) {
       if (child instanceof HTMLElement) {
         element.append(child);
         continue;

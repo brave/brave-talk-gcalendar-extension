@@ -1,28 +1,44 @@
+import { debug, enableDebugging } from "./debug";
+
+// TODO (Sampson): Move this to an extension option
+enableDebugging(true);
+
 import {
-  checkForAutoCreateMeetingFlag,
   isGoogleCalendar,
-  watchForChanges,
+  watchForChanges as googleWatchForChanges,
+  checkForAutoCreateMeetingFlag as googleCheckAutoCreate,
   watchForGmailCompanion,
 } from "./google-calendar";
 
 import { isProtonCalendar, listenForEventDialog } from "./proton-calendar";
 
-checkForAutoCreateMeetingFlag();
+import {
+  isSkiff,
+  watchForChanges as skiffWatchForChanges,
+  handleAutoCreateMeetingFlag as skiffCheckAutoCreate,
+} from "./skiff-calendar";
+
+// TODO (Sampson): Move this to a dedicated component
 watchForGmailCompanion();
 
+const { version } = chrome.runtime.getManifest();
+const message = `Brave Talk %platform% extension ${version} running`;
+
+/**
+ * TODO (Sampson): We may be able to simplify things quite
+ * a bit by using the `matching` attribute of the manifest
+ * to inject site-specific modules. This would spare us
+ * the need to check hostnames, etc.
+ */
 if (isGoogleCalendar()) {
-  console.log(
-    `Brave Talk Google Calendar extension ${
-      chrome.runtime.getManifest().version
-    } running`
-  );
-  checkForAutoCreateMeetingFlag();
-  watchForChanges();
+  debug(message.replace("%platform%", "Google Calendar"));
+  googleCheckAutoCreate();
+  googleWatchForChanges();
 } else if (isProtonCalendar()) {
-  console.log(
-    `Brave Talk Proton Calendar extension ${
-      chrome.runtime.getManifest().version
-    } running`
-  );
+  debug(message.replace("%platform%", "Proton Calendar"));
   listenForEventDialog();
+} else if (isSkiff()) {
+  debug(message.replace("%platform%", "Skiff Calendar"));
+  skiffCheckAutoCreate();
+  skiffWatchForChanges();
 }
