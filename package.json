@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/brave/jidesha#readme",
   "devDependencies": {
-    "@types/chrome": "0.0.238",
+    "@types/chrome": "^0.0.238",
     "@types/jest": "29.5.2",
     "copy-webpack-plugin": "11.0.0",
     "husky": "8.0.3",
