@@ -16,11 +16,33 @@ Build this extension:
     npm install
     npm run build
 
-Go to "brave://extensions",
-enable Developer Mode,
-click on "Load unpacked",
-navigate to the `dist` directory created by `npm run build`.
-and click on 'Select`.
+Extension files will be found in the `/dist` directory.
 
-Now go to [Google Calendar](https://calendar.google.com/) and start the creation process for an appointment.
-Towards the bottom of the pop-up window, you should see a button with the icon to add a meeting".
+## Manual Testing
+
+Go to `brave://extensions`, enable _Developer Mode_, click on _Load unpacked_, navigate to the `/dist` directory (created by running `npm run build`) and click _Select_.
+
+Now go to a supported calendar (e.g. [Google Calendar](https://calendar.google.com/), [Proton Calendar](https://calendar.proton.me/), [Skiff Calendar](https://app.skiff.com/calendar/)) and begin the process of creating a new event. During the event-creation process, you should see an option to add a Brave Talk meeting.
+
+## Automated Testing
+
+Testing is done against live calendars. For this reason a `.env` file needs to be created in the root of the project directory, and given credentials for the calendar you wish to test. For example, if you would like to test Proton Calendar, your `.env` will need to look something like the following:
+
+```
+GOOGLE_AUTH_URL="https://accounts.google.com"
+GOOGLE_USERNAME="…"
+GOOGLE_PASSWORD="…"
+GOOGLE_STAY_SIGNED_IN="false"
+
+PROTON_AUTH_URL="https://calendar.proton.me"
+PROTON_USERNAME="…"
+PROTON_PASSWORD="…"
+PROTON_STAY_SIGNED_IN="false"
+
+SKIFF_AUTH_URL="https://app.skiff.com/calendar/"
+SKIFF_USERNAME="…"
+SKIFF_PASSWORD="…"
+SKIFF_STAY_SIGNED_IN="false"
+```
+
+Tests are Puppeteer driven. After running `npm install` and `npm run build` (and creating your `.env` file), you can run `npm run test` to run tests for all calendars. You may also run tests for a single calendar by passing its name along (e.g. `npm run test skiff`, `npm run test proton`).

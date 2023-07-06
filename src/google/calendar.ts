@@ -2,11 +2,19 @@
 This file contains all the logic that interacts with the html of the google calendar site
  */
 
-import { createRoom, generateNewRoomUrl, isBraveTalkUrl } from "./brave-talk";
+import {
+  createRoom,
+  generateNewRoomUrl,
+  isBraveTalkUrl,
+} from "../brave/brave-talk";
 import {
   buildQuickAddButton,
   buildFullScreenAddButton,
-} from "./brave-talk-button";
+} from "../brave/brave-talk-button";
+
+export const TALK_BUTTON_ID = "jitsi_button_quick_add";
+export const TALK_BUTTON_SELECTOR = `#${TALK_BUTTON_ID}`;
+export const BASE_URL = "https://calendar.google.com/";
 
 // we want to automatically add the brave talk meeting to
 // the event immediately when it opens in full screen mode, in two cases:
@@ -26,7 +34,11 @@ export function getViewFamily(): string | undefined {
   return document?.body?.dataset?.viewfamily;
 }
 
-export function isGoogleCalendar(): boolean {
+export function isGoogleCalendar(address?: string): boolean {
+  if (address) {
+    const url = new URL(address);
+    return url.host === "calendar.google.com";
+  }
   return !!getViewFamily();
 }
 

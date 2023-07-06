@@ -81,33 +81,35 @@ export function buildQuickAddButton(tabPanel: HTMLElement) {
   console.log("Clone failure. Falling back to last-known button.");
 
   // prettier-ignore
-  const element = el( "div", { class: "m2hqkd" },
-    el("div", { class: "fy8IH xI9Bs FrRgdd" },
-      el("div", { class: "FkXdCf HyA7Fb" },
-        el("i", { class: "google-material-icons meh4fc hggPq GyffFb", "aria-hidden": "true" },
-          el("div", {},
-            el("img", { class: "Gxo8Ie", src: chrome.runtime.getURL("brave_talk_icon.svg"), "aria-hidden": "true" })))),
-      el("div", { class: "tsUyod XsN7kf", "data-dragsource-ignore": "true" },
-        el("div", { class: "lulit" },
-          el("div", { class: "d27AIf z5I5rf s2r4Od", "data-in-bubble": "true" },
-            el("div", { class: "oJeWuf" },
-              el("div", { class: "emaTS yLISWd" },
-                el("div", { class: "Kh5Sib FAE19b", "data-use-button-for-single-solution": "true" },
-                  el("button", { class: "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ nCP5yc AjY5Oe DuMIQc LQeN7 JTAoxf Z1uZib",
+  const element = makeElement("div", { class: "m2hqkd" },
+    makeElement("div", { class: "fy8IH xI9Bs FrRgdd" },
+      makeElement("div", { class: "FkXdCf HyA7Fb" },
+        makeElement("i", { class: "google-material-icons meh4fc hggPq GyffFb", "aria-hidden": "true" },
+          makeElement("div", {},
+            makeElement("img", { class: "Gxo8Ie", src: chrome.runtime.getURL("brave_talk_icon.svg"), "aria-hidden": "true" })))),
+      makeElement("div", { class: "tsUyod XsN7kf", "data-dragsource-ignore": "true" },
+        makeElement("div", { class: "lulit" },
+          makeElement("div", { class: "d27AIf z5I5rf s2r4Od", "data-in-bubble": "true" },
+            makeElement("div", { class: "oJeWuf" },
+              makeElement("div", { class: "emaTS yLISWd" },
+                makeElement("div", { class: "Kh5Sib FAE19b", "data-use-button-for-single-solution": "true" },
+                  makeElement("button", {
+                    class: "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ nCP5yc AjY5Oe DuMIQc LQeN7 JTAoxf Z1uZib",
                     id: "jitsi_button_quick_add",
                     "data-idom-class": "nCP5yc AjY5Oe DuMIQc LQeN7 JTAoxf Z1uZib",
-                    "data-solution": "W1szXV0." },
-                    el("div", { class: "VfPpkd-Jh9lGc" }),
-                    el("div", { class: "VfPpkd-J1Ukfc-LhBDec" }),
-                    el("span", { class: "VfPpkd-vQzf8d" },
+                    "data-solution": "W1szXV0."
+                  },
+                    makeElement("div", { class: "VfPpkd-Jh9lGc" }),
+                    makeElement("div", { class: "VfPpkd-J1Ukfc-LhBDec" }),
+                    makeElement("span", { class: "VfPpkd-vQzf8d" },
                       "Add a Brave Talk meeting"
                     )))),
-              el("div", { class: "jekkF x5Urbb" })))))));
+              makeElement("div", { class: "jekkF x5Urbb" })))))));
 
   tabPanel.appendChild(element);
 }
 
-function el(
+function makeElement(
   tag: keyof HTMLElementTagNameMap,
   attrs: Record<string, string>,
   ...children: any[]

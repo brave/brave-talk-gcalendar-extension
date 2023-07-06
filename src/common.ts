@@ -1,4 +1,30 @@
-import { debug } from "./debug";
+import { ElementHandle, Page } from "puppeteer-core";
+
+export async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function waitForSelectorAndPause<T extends HTMLElement>(
+  page: Page,
+  selector: string,
+  pauseTime = 1_000
+): Promise<ElementHandle<T>> {
+  const element = await page.waitForSelector(selector);
+  await sleep(pauseTime);
+  return element as ElementHandle<T>;
+}
+
+export function setupWaitForSelectorAndPause(page: Page) {
+  return async function waitForSelectorAndPause<T extends HTMLElement>(
+    selector: string,
+    timeout: number = 3_000,
+    pauseTime = 2_000
+  ): Promise<ElementHandle<T>> {
+    const element = await page.waitForSelector(selector, { timeout });
+    await sleep(pauseTime);
+    return element as ElementHandle<T>;
+  };
+}
 
 export async function clickElement(
   selector: string,
@@ -24,7 +50,7 @@ export async function clickElement(
    */
   (element as HTMLElement).click();
 
-  debug(`Clicked ${selector}`);
+  console.log(`Clicked ${selector}`);
 }
 
 export function waitForSelector(
