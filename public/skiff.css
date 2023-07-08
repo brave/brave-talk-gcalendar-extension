@@ -1,36 +1,42 @@
-@media (prefers-color-scheme: light) {
+/**
+ * Skiff users can choose between Light, Dark, and System themes.
+ * The user's selection is stored in localStorage, which we do not
+ * presently have the ability to access from our extension code.
+ *
+ * The user's selection is reflected in the [style] attribute of
+ * the <body> element. As a result, we can use CSS attribute 
+ * selectors to style our extension's UI based on the user's
+ * theme selection.
+ *
+ * We assume presence of `--text-primary: rgb(0, 0, 0);` in the
+ * <body> element's [style] attribute indicates a Light theme.
+ * We assume presence of `--text-primary: rgb(255, 255, 255);` in
+ * the <body> element's [style] attribute indicates a Dark theme.
+ */
 
-  button.brave-talk-button {
-    color: black;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 1.0);
-  }
-
-  button.brave-talk-button:hover {
-    background: rgba(0, 0, 0, 0.06);
-  }
-
+/* Light theme */
+body[style*='--text-primary: rgb(0, 0, 0);'] {
+  --brave-ui-text: black;
+  --brave-ui-border: 1px solid rgba(0, 0, 0, 0.08);
+  --brave-ui-background: rgba(255, 255, 255, 1.0);
+  --brave-ui-background-hover: rgba(0, 0, 0, 0.06);
+  --brave-ui-filter: none;
 }
 
-@media (prefers-color-scheme: dark) {
-
-  button.brave-talk-button {
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  button.brave-talk-button:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  button.brave-talk-button img {
-    filter: grayscale(1) brightness(1.5);
-  }
-
+/* Dark theme */
+body[style*='--text-primary: rgb(255, 255, 255);'] {
+  --brave-ui-text: white;
+  --brave-ui-border: 1px solid rgba(255, 255, 255, 0.08);
+  --brave-ui-background: rgba(255, 255, 255, 0.04);
+  --brave-ui-background-hover: rgba(255, 255, 255, 0.08);
+  --brave-ui-filter: grayscale(1) brightness(1.5);
 }
 
+/* Shared styles */
 button.brave-talk-button {
+  color: var(--brave-ui-text);
+  border: var(--brave-ui-border);
+  background: var(--brave-ui-background);
   font-size: 13px;
   padding: 1em 0px;
   border-radius: 1em;
@@ -41,10 +47,12 @@ button.brave-talk-button {
 
 button.brave-talk-button:hover {
   cursor: pointer;
+  background: var(--brave-ui-background-hover);
 }
 
 button.brave-talk-button img {
   max-height: 1em;
   margin-right: 1em;
   vertical-align: middle;
+  filter: var(--brave-ui-filter);
 }
