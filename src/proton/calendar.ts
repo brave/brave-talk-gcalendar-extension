@@ -41,7 +41,9 @@ export function handleButtonClick(event: Event): void {
 
 export function isProtonCalendar(address?: string): boolean {
   const url = new URL(address ?? location.href);
-  return url.host === "calendar.proton.me";
+  const isProton = url.host === "calendar.proton.me";
+  console.log("proton:isProtonCalendar", url.host, isProton);
+  return isProton;
 }
 
 export function buildBoxAndButton(): [HTMLDivElement, HTMLButtonElement] {

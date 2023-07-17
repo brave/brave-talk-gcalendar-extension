@@ -147,11 +147,17 @@ describe("Skiff Calendar", () => {
     await openNewEventMenu();
 
     const button = await getBraveTalkButton();
-    const buttonTextColor = await button?.evaluate(
+    const expectedColor = "rgb(0, 0, 0)";
+    const actualColor = await button?.evaluate(
       (el) => getComputedStyle(el).color
     );
 
-    expect(buttonTextColor).toBe("rgb(0, 0, 0)");
+    if (actualColor !== expectedColor) {
+      console.log("Expected color: ", expectedColor);
+      await state.page.screenshot({ path: "skiffLightMode.png" });
+    }
+
+    expect(actualColor).toBe(expectedColor);
 
     await cancelEventCreation();
   });
@@ -163,11 +169,17 @@ describe("Skiff Calendar", () => {
     await openNewEventMenu();
 
     const button = await getBraveTalkButton();
-    const buttonTextColor = await button?.evaluate(
+    const expectedColor = "rgb(255, 255, 255)";
+    const actualColor = await button?.evaluate(
       (el) => getComputedStyle(el).color
     );
 
-    expect(buttonTextColor).toBe("rgb(255, 255, 255)");
+    if (actualColor !== expectedColor) {
+      console.log("Expected color: ", expectedColor);
+      await state.page.screenshot({ path: "skiffDarkMode.png" });
+    }
+
+    expect(actualColor).toBe(expectedColor);
 
     await cancelEventCreation();
   });

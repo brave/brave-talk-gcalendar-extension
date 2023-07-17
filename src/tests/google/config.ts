@@ -9,6 +9,7 @@ export const auth = {
     PASSWORD_INPUT: '#password input[type="password"]',
     PASSWORD_NEXT_BUTTON: "#passwordNext",
     ACCOUNT_LIST_ENTRY: `div[data-email="${process.env.GOOGLE_USERNAME}"]`,
+    WORKSPACE_SIGN_IN_BUTTON: "a.button[href^='https://accounts.google.com/']",
   },
 };
 

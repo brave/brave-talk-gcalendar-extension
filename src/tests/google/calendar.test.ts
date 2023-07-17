@@ -20,21 +20,36 @@ describe("Google Calendar", () => {
   };
 
   beforeAll(async () => {
+    console.log("google:beforeAll");
+
     state.createdEventTitle = Date.now().toString();
-    await setupAuthenticatedBrowserSession(authenticateUser, state);
+    await setupAuthenticatedBrowserSession(authenticateUser, state).catch(
+      (error) => {
+        console.log(error);
+        console.error("An authentication session could not be established");
+        // Don't attempt to do any further testing
+        process.exit(1);
+      }
+    );
   });
 
   afterAll(async () => {
+    console.log("google:afterAll");
+
     await deleteEventByTitle(state.page, state.createdEventTitle);
     await tearDownBrowserInstance(state.browser, auth.STAY_SIGNED_IN);
   });
 
   it("Identifies Google Calendar via URL", async () => {
+    console.log("google:isGoogleCalendar");
+
     await state.page.goto(Google.BASE_URL, { waitUntil: "networkidle0" });
     expect(Google.isGoogleCalendar(state.page.url())).toBe(true);
   });
 
   it("Displays the Brave Talk button on New Event", async () => {
+    console.log("google:buttonDisplayed");
+
     const options = { visible: true, timeout: 5_000 };
 
     const createButton = await state.page.waitForSelector(
@@ -59,6 +74,8 @@ describe("Google Calendar", () => {
   });
 
   it("Clicking Brave Talk button opens popup window", async () => {
+    console.log("google:buttonClickOpensPopup");
+
     const button = await state.page.waitForSelector(
       Google.TALK_BUTTON_SELECTOR
     );
@@ -76,6 +93,8 @@ describe("Google Calendar", () => {
   });
 
   it("Stores Brave Talk meeting URL in the event location", async () => {
+    console.log("google:storesBraveTalkUrl");
+
     const options = { visible: true, timeout: 5_000 };
     const locationInput = await state.page.waitForSelector(
       selectors.EVENT_LOCATION_INPUT,
@@ -91,6 +110,8 @@ describe("Google Calendar", () => {
   });
 
   it("Brave Talk meeting URL persists after Save event", async () => {
+    console.log("google:braveTalkUrlPersists");
+
     const options = { visible: true, timeout: 5_000 };
     const titleInput = await state.page.waitForSelector(
       selectors.EVENT_TITLE_INPUT,
