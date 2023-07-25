@@ -5,6 +5,7 @@ export const auth = {
   STAY_SIGNED_IN: process.env.GOOGLE_STAY_SIGNED_IN === "true",
   selectors: {
     USERNAME_INPUT: "#identifierId",
+    CAPTCHA_IMAGE: "#captchaimg",
     NEXT_BUTTON: "#identifierNext",
     PASSWORD_INPUT: '#password input[type="password"]',
     PASSWORD_NEXT_BUTTON: "#passwordNext",

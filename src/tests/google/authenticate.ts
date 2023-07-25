@@ -4,6 +4,7 @@ import { Page, PuppeteerLifeCycleEvent } from "puppeteer-core";
 
 enum PageType {
   LOGIN,
+  LOGIN_CAPTCHA,
   ACCOUNT_CHOOSER,
   CALENDAR,
   WORKSPACE,
@@ -24,7 +25,9 @@ export async function getPageType(page: Page): Promise<PageType | undefined> {
 
   // We're being presented with a login page
   if (page.url().startsWith(`https://accounts.google.com/`)) {
-    if (await page.$(auth.selectors.USERNAME_INPUT)) {
+    if (await page.$(auth.selectors.CAPTCHA_IMAGE)) {
+      return PageType.LOGIN_CAPTCHA;
+    } else if (await page.$(auth.selectors.USERNAME_INPUT)) {
       return PageType.LOGIN;
     } else if (await page.$(auth.selectors.ACCOUNT_LIST_ENTRY)) {
       return PageType.ACCOUNT_CHOOSER;
@@ -58,6 +61,45 @@ async function authenticateUserLogin(page: Page): Promise<void> {
     .then((button) => button?.click());
 }
 
+async function authenticateUserLoginCaptcha(page: Page): Promise<void> {
+  console.log("google:authenticateUserLoginCaptcha");
+
+  if (!auth.USERNAME || !auth.PASSWORD) {
+    throw new Error("USERNAME or PASSWORD not found");
+  }
+
+  const options = { visible: true, timeout: 5_000 };
+
+  await page
+    .waitForSelector(auth.selectors.USERNAME_INPUT, options)
+    .then((input) => input?.type(auth.USERNAME!, { delay: 100 }));
+
+  await page
+    .waitForSelector(auth.selectors.NEXT_BUTTON, options)
+    .then((elementHandle) => elementHandle?.click());
+
+  await page.waitForSelector(auth.selectors.CAPTCHA_IMAGE, options);
+
+  /**
+   * We've come across a captcha image. We will wait for up to 60 seconds
+   * for the user to solve the captcha. If the user does not solve the
+   * captcha in time, we will throw an error.
+   */
+
+  console.log("google:authenticateUserLoginCaptcha: waiting for solution");
+
+  await page
+    .waitForSelector(
+      auth.selectors.PASSWORD_INPUT,
+      Object.assign(options, { timeout: 60_000 })
+    )
+    .then((input) => input?.type(auth.PASSWORD!, { delay: 100 }));
+
+  await page
+    .waitForSelector(auth.selectors.PASSWORD_NEXT_BUTTON, options)
+    .then((button) => button?.click());
+}
+
 async function authenticateUserWorkspace(page: Page): Promise<void> {
   console.log("google:authenticateUserWorkspace");
 
@@ -73,15 +115,20 @@ async function authenticateUserWorkspace(page: Page): Promise<void> {
 
   await page.goto(href!, { waitUntil: "networkidle0" });
 
-  switch (await getPageType(page)) {
+  const pageType = await getPageType(page);
+
+  switch (pageType) {
     case PageType.LOGIN:
       await authenticateUserLogin(page);
+      break;
+    case PageType.LOGIN_CAPTCHA:
+      await authenticateUserLoginCaptcha(page);
       break;
     case PageType.ACCOUNT_CHOOSER:
       await authenticateUserAccountChooser(page);
       break;
     default:
-      throw new Error("Unknown page type");
+      throw new Error(`Unknown page type: ${pageType}`);
   }
 }
 
@@ -119,9 +166,14 @@ export async function authenticateUser(page: Page): Promise<void> {
     timeout: 5_000,
   });
 
-  switch (await getPageType(page)) {
+  const pageType = await getPageType(page);
+
+  switch (pageType) {
     case PageType.LOGIN:
       await authenticateUserLogin(page);
+      break;
+    case PageType.LOGIN_CAPTCHA:
+      await authenticateUserLoginCaptcha(page);
       break;
     case PageType.ACCOUNT_CHOOSER:
       await authenticateUserAccountChooser(page);
@@ -133,6 +185,6 @@ export async function authenticateUser(page: Page): Promise<void> {
       // We are already logged in
       break;
     default:
-      throw new Error("Unknown page type");
+      throw new Error(`Unknown page type: ${pageType}`);
   }
 }
