@@ -32,6 +32,7 @@ Testing is done against live calendars. For this reason a `.env` file needs to b
 GOOGLE_AUTH_URL="https://accounts.google.com"
 GOOGLE_USERNAME="…"
 GOOGLE_PASSWORD="…"
+GOOGLE_RECOVERY_PHONE_NUMBER="…"
 GOOGLE_STAY_SIGNED_IN="false"
 
 PROTON_AUTH_URL="https://calendar.proton.me"
@@ -44,5 +45,7 @@ SKIFF_USERNAME="…"
 SKIFF_PASSWORD="…"
 SKIFF_STAY_SIGNED_IN="false"
 ```
+
+> Note: _The `.env` file will automatically be created (if one does not already exist) after running `npm install`. Update the file with your credentials once created._
 
 Tests are Puppeteer driven. After running `npm install` and `npm run build` (and creating your `.env` file), you can run `npm run test` to run tests for all calendars. You may also run tests for a single calendar by passing its name along (e.g. `npm run test skiff`, `npm run test proton`).

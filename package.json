@@ -9,7 +9,9 @@
     "watch": "webpack --mode development --devtool inline-source-map --watch",
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "create-env": "tsc ./src/scripts/createEnv.ts && npm run format && node ./src/scripts/createEnv.js",
+    "postinstall": "npm run create-env"
   },
   "repository": {
     "type": "git",

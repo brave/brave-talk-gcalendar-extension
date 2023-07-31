@@ -9,4 +9,5 @@ build/
 node_modules/
 dist/
 tmp/
+src/scripts/*.js
 .env
