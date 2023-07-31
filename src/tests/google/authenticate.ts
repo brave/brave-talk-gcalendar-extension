@@ -6,6 +6,7 @@ enum PageType {
   LOGIN,
   LOGIN_CAPTCHA,
   ACCOUNT_CHOOSER,
+  MY_ACCOUNT,
   CALENDAR,
   WORKSPACE,
 }
@@ -16,6 +17,10 @@ export async function getPageType(page: Page): Promise<PageType | undefined> {
   // We are already logged in
   if (page.url().startsWith(`https://calendar.google.com/`)) {
     return PageType.CALENDAR;
+  }
+
+  if (page.url().startsWith(`https://myaccount.google.com/`)) {
+    return PageType.MY_ACCOUNT;
   }
 
   // We're being presented with the Workspace info page
@@ -100,6 +105,19 @@ async function authenticateUserLoginCaptcha(page: Page): Promise<void> {
     .then((button) => button?.click());
 }
 
+async function confirmRecoveryPhoneNumber(page: Page): Promise<void> {
+  /**
+   * TODO (Sampson): In some cases the user will be asked
+   * to verify via receiving a test or phone call to their
+   * account-recovery phone number. In addition to these
+   * options the user may also be presented with an option
+   * to simplify verify the recovery number by entering it
+   * into a text field. We should handle this case, using
+   * the number from the .env file.
+   */
+  throw new Error("Not implemented");
+}
+
 async function authenticateUserWorkspace(page: Page): Promise<void> {
   console.log("google:authenticateUserWorkspace");
 
@@ -154,6 +172,21 @@ async function authenticateUserAccountChooser(page: Page): Promise<void> {
     .then((button) => button?.click());
 }
 
+async function tryContinueFromMyAccount(page: Page): Promise<void> {
+  console.log("google:tryContinueFromMyAccount");
+
+  page
+    .goto("https://calendar.google.com/calendar/")
+    .then(() => {
+      console.log("google:tryContinueFromMyAccount: success");
+      authenticateUser(page);
+    })
+    .catch(() => {
+      console.log("google:tryContinueFromMyAccount: failure");
+      authenticateUser(page);
+    });
+}
+
 export async function authenticateUser(page: Page): Promise<void> {
   console.log("google:authenticateUser");
 
@@ -180,6 +213,9 @@ export async function authenticateUser(page: Page): Promise<void> {
       break;
     case PageType.WORKSPACE:
       await authenticateUserWorkspace(page);
+      break;
+    case PageType.MY_ACCOUNT:
+      await tryContinueFromMyAccount(page);
       break;
     case PageType.CALENDAR:
       // We are already logged in

@@ -8,6 +8,11 @@ export async function authenticateUser(page: Page): Promise<void> {
 
   await page.goto(auth.AUTH_URL);
 
+  // If we're already logged in, we can skip the rest
+  if (page.url() === auth.AUTH_URL) {
+    return;
+  }
+
   if (!auth.USERNAME || !auth.PASSWORD) {
     throw new Error("USERNAME or PASSWORD not found");
   }
