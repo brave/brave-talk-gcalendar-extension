@@ -46,6 +46,6 @@ SKIFF_PASSWORD="…"
 SKIFF_STAY_SIGNED_IN="false"
 ```
 
-> Note: _The `.env` file will automatically be created (if one does not already exist) after running `npm install`. Update the file with your credentials once created._
+> Note: _A template is provided via `.env.example`. Rename this to `.env` and make any necessary changes._
 
 Tests are Puppeteer driven. After running `npm install` and `npm run build` (and creating your `.env` file), you can run `npm run test` to run tests for all calendars. You may also run tests for a single calendar by passing its name along (e.g. `npm run test skiff`, `npm run test proton`).
