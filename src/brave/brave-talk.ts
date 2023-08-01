@@ -1,6 +1,6 @@
-const TALK_BASE_URL = "https://talk.brave.com";
-const POPUP_WINDOW_NAME = "talk_extension_popup";
-const ROOM_URL_PATTERN = /https:\/\/talk.brave.com\/[a-zA-Z0-9_-]{43}/;
+export const TALK_BASE_URL = "https://talk.brave.com";
+export const POPUP_WINDOW_NAME = "talk_extension_popup";
+export const ROOM_URL_PATTERN = /https:\/\/talk.brave.com\/[a-zA-Z0-9_-]{43}/;
 
 /**
  * Generates new room name.  This is how Brave Talk does it.
@@ -29,7 +29,7 @@ export function generateNewRoomUrl() {
 }
 
 export function isBraveTalkUrl(text: string): boolean {
-  return text.startsWith(`${TALK_BASE_URL}/`);
+  return ROOM_URL_PATTERN.test(text);
 }
 
 /**
@@ -61,7 +61,39 @@ export function joinRoom(roomUrl: string) {
   openWindow(url, name, features);
 }
 
-export function openWindow(url: string, name: string, features: string): void {
+function isValidNavigableTargetName(name: string): boolean {
+  /**
+   * A valid navigable target name is any string with at least one character
+   * that does not start with a U+005F LOW LINE character. (Names starting with
+   * an underscore are reserved for special keywords.)
+   *
+   * A valid navigable target name or keyword is any string that is either a
+   * valid navigable target name or that is an ASCII case-insensitive match for
+   * one of: _blank, _self, _parent, or _top.
+   *
+   * https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names
+   */
+
+  const nameLC = name.toLowerCase().trim();
+
+  if (["_blank", "_self", "_parent", "_top"].includes(nameLC)) {
+    return true;
+  }
+
+  return /^[a-z0-9][a-z0-9_-]*$/.test(nameLC);
+}
+
+export function openWindow(
+  url: string,
+  target: string = "_blank",
+  features: string = ""
+): void {
+  const destination = new URL(url);
+
+  if (!isValidNavigableTargetName(target)) {
+    throw new Error(`Invalid window name: ${target}`);
+  }
+
   const featureList = features.toLowerCase().split(",");
 
   // Some features are required, for security/privacy reasons.
@@ -71,10 +103,13 @@ export function openWindow(url: string, name: string, features: string): void {
     }
   }
 
-  window.open(url, name, featureList.join(","));
+  window.open(destination, target, featureList.join(","));
 }
 
 export function createRoom(roomUrl: string) {
+  if (!ROOM_URL_PATTERN.test(roomUrl)) {
+    throw new Error(`Invalid room URL: ${roomUrl}`);
+  }
   const createUrl = `${roomUrl}?create_only=y`;
   const features = `popup,noopener,noreferrer,width=320,height=480`;
   openWindow(createUrl, POPUP_WINDOW_NAME, features);

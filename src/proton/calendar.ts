@@ -1,5 +1,5 @@
-import * as BraveTalk from "./brave-talk";
-import { createElement } from "./common";
+import * as BraveTalk from "../brave/brave-talk";
+import { createElement } from "../common";
 
 const SELECTORS = {
   modals: `
@@ -10,8 +10,8 @@ const SELECTORS = {
   eventDescriptionBox: "div:has(> label[for='event-description-input'])",
 };
 
-const TALK_BUTTON_ID = "jitsi_button_quick_add";
-const TALK_ICON_URL = chrome.runtime.getURL("brave_talk_icon.svg");
+export const TALK_BUTTON_ID = "jitsi_button_quick_add";
+export const TALK_ICON_URL = chrome.runtime.getURL("brave_talk_icon.svg");
 
 enum ButtonStates {
   CREATE,
@@ -39,8 +39,11 @@ export function handleButtonClick(event: Event): void {
   }
 }
 
-export function isProtonCalendar(): boolean {
-  return location.host === "calendar.proton.me";
+export function isProtonCalendar(address?: string): boolean {
+  const url = new URL(address ?? location.href);
+  const isProton = url.host === "calendar.proton.me";
+  console.log("proton:isProtonCalendar", url.host, isProton);
+  return isProton;
 }
 
 export function buildBoxAndButton(): [HTMLDivElement, HTMLButtonElement] {
@@ -69,8 +72,8 @@ export function buildBoxAndButton(): [HTMLDivElement, HTMLButtonElement] {
   // prettier-ignore
   const container = createElement("div", containerAttrs, [
     ["label", labelAttrs, [
-        ["img", iconAttrs],
-        ["span", buttonLabel, { class: "sr-only" }],
+      ["img", iconAttrs],
+      ["span", buttonLabel, { class: "sr-only" }],
     ]],
     ["div", { class: "flex-item-fluid" }, [
       button

@@ -3,36 +3,42 @@ import {
   findTalkUrlInString,
   generateNewRoomUrl,
   joinRoom,
-} from "./brave-talk";
+} from "../brave/brave-talk";
 
-const AC_KEY = "skiff:autoCreate";
-const BRAVE_TALK_BUTTON_ID = "brave-talk-button";
-const BRAVE_TALK_ICON_URL = chrome.runtime.getURL("brave_talk_icon.svg");
-const NEW_EVENT_BUTTON_SELECTOR = "[data-test='new-event-button']";
-const CONFIRM_REMOVE_SELECTOR = "[data-test='confirm-Remove']";
-const CALL_JOIN_ADD_SELECTOR = "[data-test='conferencing-join-or-add-button']";
-const CONFERENCING_INPUT_SELECTOR = "[data-test='conferencing-input-field']";
-const LOCATION_FIELD_SELECTOR = "[data-test='location-input-field']";
-const DESCRIPTION_FIELD_SELECTOR = "[data-test='description-input-field']";
-const CANCEL_BUTTON_SELECTOR = "[data-test='dialog-cancel']";
-const CONFIRM_REMOVE_BUTTON_SELECTOR = "[data-test='confirm-Remove']";
+export const BASE_URL = "https://app.skiff.com/calendar/";
+export const AC_KEY = "skiff:autoCreate";
+export const BRAVE_TALK_BUTTON_ID = "brave-talk-button";
+export const BRAVE_TALK_BUTTON_SELECTOR = `#${BRAVE_TALK_BUTTON_ID}`;
+export const BRAVE_TALK_ICON_URL = chrome.runtime.getURL("brave_talk_icon.svg");
+export const NEW_EVENT_BUTTON_SELECTOR = "[data-test='new-event-button']";
+export const CALL_JOIN_ADD_SELECTOR =
+  "[data-test='conferencing-join-or-add-button']";
+export const CONFERENCING_INPUT_SELECTOR =
+  "[data-test='conferencing-input-field']";
+export const EVENT_TITLE_INPUT_SELECTOR =
+  "textarea[id='textAreaId']:first-child:last-child";
+export const LOCATION_FIELD_SELECTOR = "[data-test='location-input-field']";
+export const DESCRIPTION_FIELD_SELECTOR =
+  "[data-test='description-input-field']";
+export const CANCEL_BUTTON_SELECTOR = "[data-test='dialog-cancel']";
+export const CONFIRM_REMOVE_BUTTON_SELECTOR = "[data-test='confirm-Remove']";
 
-import { debug } from "./debug";
-import { clickElement, createElement, simulateFocusEvents } from "./common";
+import { clickElement, createElement, simulateFocusEvents } from "../common";
 
-export function isSkiff(): boolean {
-  let { hostname, pathname } = window.location;
-  debug("isSkiff", hostname, pathname);
-  return hostname === "app.skiff.com" && pathname.startsWith("/calendar");
+export function isSkiff(address?: string): boolean {
+  let url: URL = new URL(address ? address : window.location.href);
+  return (
+    url.hostname === "app.skiff.com" && url.pathname.startsWith("/calendar/")
+  );
 }
 
 export async function handleAutoCreateMeetingFlag(): Promise<void> {
   if (await getAutoCreateMeetingFlag()) {
     try {
       await clickElement(NEW_EVENT_BUTTON_SELECTOR, 1_000);
-      await clickElement(`#${BRAVE_TALK_BUTTON_ID}`);
+      await clickElement(BRAVE_TALK_BUTTON_SELECTOR);
     } catch (error) {
-      debug("handleAutoCreateMeetingFlag:error", error);
+      console.log("handleAutoCreateMeetingFlag:error", error);
     } finally {
       await clearAutoCreateMeetingFlag();
     }
@@ -41,12 +47,12 @@ export async function handleAutoCreateMeetingFlag(): Promise<void> {
 
 export async function getAutoCreateMeetingFlag(): Promise<boolean> {
   const results = await chrome.storage.local.get({ [AC_KEY]: false });
-  debug("getAutoCreateMeetingFlag", results[AC_KEY]);
+  console.log("getAutoCreateMeetingFlag", results[AC_KEY]);
   return results[AC_KEY];
 }
 
 export async function clearAutoCreateMeetingFlag(): Promise<void> {
-  debug("clearAutoCreateMeetingFlag");
+  console.log("clearAutoCreateMeetingFlag");
   await chrome.storage.local.set({ [AC_KEY]: false });
 }
 
@@ -87,7 +93,7 @@ export function isEventEditorComponent(node: Node): boolean {
 }
 
 export async function prepareEditorView(view: Node): Promise<void> {
-  debug("prepareEditorView", view);
+  console.log("prepareEditorView", view);
   if (view instanceof HTMLElement) {
     const button = createButton();
     const braveMeeting = getBraveMeeting();
@@ -125,7 +131,7 @@ export async function prepareEditorView(view: Node): Promise<void> {
       }
     }
 
-    debug("Could not find native add button");
+    console.log("Could not find native add button");
     view.appendChild(button);
   }
 }
@@ -141,10 +147,10 @@ export function isConfirmRemoveConferenceDialog(node: Node): boolean {
 
 export function prepareConfirmRemoveConferenceDialog(view: Node): void {
   if (view instanceof HTMLElement) {
-    const removeButton = view.querySelector(CONFIRM_REMOVE_SELECTOR);
+    const removeButton = view.querySelector(CONFIRM_REMOVE_BUTTON_SELECTOR);
     if (removeButton instanceof HTMLElement && getBraveMeeting()) {
       removeButton.addEventListener("click", function handleClick(): void {
-        debug("confirmRemoveConferenceDialog", "clicked remove button");
+        console.log("confirmRemoveConferenceDialog", "clicked remove button");
         removeButton.removeEventListener("click", handleClick);
         toggleButton("show");
       });
@@ -155,11 +161,11 @@ export function prepareConfirmRemoveConferenceDialog(view: Node): void {
 export function getBraveMeeting(): URL | null {
   const location = document.querySelector(CONFERENCING_INPUT_SELECTOR);
 
-  debug("getBraveMeeting", location);
+  console.log("getBraveMeeting", location);
 
   if (location instanceof HTMLInputElement) {
     const result = findTalkUrlInString(location.value);
-    debug("hasBraveMeeting", result);
+    console.log("hasBraveMeeting", result);
     return result ? new URL(result) : null;
   }
 
@@ -204,10 +210,10 @@ export function handleButtonClick(event: MouseEvent): void {
     const roomUrl = getBraveMeeting();
 
     if (roomUrl instanceof URL) {
-      debug("Joining Brave Talk meeting");
+      console.log("Joining Brave Talk meeting");
       joinRoom(roomUrl.href);
     } else {
-      debug("Adding Brave Talk meeting");
+      console.log("Adding Brave Talk meeting");
 
       const location = document.querySelector(CONFERENCING_INPUT_SELECTOR);
 
@@ -233,7 +239,7 @@ export function buttonExists(): boolean {
   const result = document.querySelector(
     `button#${BRAVE_TALK_BUTTON_ID}:visible`
   );
-  debug("buttonExists", result);
+  console.log("buttonExists", result);
   return result !== null;
 }
 
@@ -242,9 +248,9 @@ export function toggleButton(
   button?: HTMLButtonElement
 ): void {
   const target = button || document.querySelector(`#${BRAVE_TALK_BUTTON_ID}`);
-  debug("toggleButton", target);
+  console.log("toggleButton", target);
   if (target instanceof HTMLButtonElement) {
-    debug("toggleButton", visibility);
+    console.log("toggleButton", visibility);
     target.hidden = visibility === "hide" ? true : false;
   }
 }
@@ -268,7 +274,7 @@ export function createButton(): HTMLButtonElement {
 
   button.addEventListener("click", handleButtonClick);
 
-  debug("createButton", button);
+  console.log("createButton", button);
 
   return button as HTMLButtonElement;
 }
