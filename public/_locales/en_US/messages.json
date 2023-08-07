@@ -1,10 +1,10 @@
 {
     "extName": {
-        "message": "Brave Talk for Google Calendar",
+        "message": "Brave Talk for Calendars",
         "description": "Name of the extension"
     },
     "extDescription": {
-        "message": "Schedule Brave Talk meetings directly from Google Calendar",
+        "message": "Schedule Brave Talk meetings directly from your web-based calendar",
         "description": "Description of the extension"
     },
     "popupTitle": {

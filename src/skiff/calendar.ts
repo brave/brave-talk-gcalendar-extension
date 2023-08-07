@@ -18,8 +18,6 @@ export const CONFERENCING_INPUT_SELECTOR =
 export const EVENT_TITLE_INPUT_SELECTOR =
   "textarea[id='textAreaId']:first-child:last-child";
 export const LOCATION_FIELD_SELECTOR = "[data-test='location-input-field']";
-export const DESCRIPTION_FIELD_SELECTOR =
-  "[data-test='description-input-field']";
 export const CANCEL_BUTTON_SELECTOR = "[data-test='dialog-cancel']";
 export const CONFIRM_REMOVE_BUTTON_SELECTOR = "[data-test='confirm-Remove']";
 
@@ -61,8 +59,10 @@ export function watchForChanges(): void {
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
         if (isEventEditorComponent(node)) {
+          console.log("isEventEditorComponent");
           prepareEditorView(node);
         } else if (isConfirmRemoveConferenceDialog(node)) {
+          console.log("isConfirmRemoveConferenceDialog");
           prepareConfirmRemoveConferenceDialog(node);
         }
       }
@@ -81,12 +81,14 @@ export function isEventEditorComponent(node: Node): boolean {
   if (node instanceof HTMLElement) {
     const expectedSelectors = [
       LOCATION_FIELD_SELECTOR,
-      DESCRIPTION_FIELD_SELECTOR,
+      CONFERENCING_INPUT_SELECTOR,
       CALL_JOIN_ADD_SELECTOR,
     ];
 
     return expectedSelectors.every((selector) => {
-      return node.querySelector(selector) !== null;
+      const result = node.querySelector(selector) !== null;
+      console.log("isEventEditorComponent", selector, result);
+      return result;
     });
   }
   return false;

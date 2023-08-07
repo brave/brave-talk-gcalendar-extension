@@ -1,51 +1,76 @@
 # Brave Talk for Google Calendar
 
-This is the code for the Brave Talk for Google Calendar chrome extension,
+This is the code for the [_Brave Talk for Calendars_](https://chrome.google.com/webstore/detail/brave-talk-for-google-cal/nimfmkdcckklbkhjjkmbjfcpaiifgamg) browser extension,
 originally based on https://github.com/jitsi/jidesha.
 
-[Find out more about Brave Talk.](https://brave.com/talk/)
+Learn more about Brave Talk at https://brave.com/talk/.
 
-# For Users
+# For Developers
 
-Install this extension from [the chrome extension webstore](https://chrome.google.com/webstore/detail/brave-talk-for-google-cal/nimfmkdcckklbkhjjkmbjfcpaiifgamg).
+### Building the Extension
 
-# For Developers Only
+```bash
+npm install
+npm run build
+```
 
-Build this extension:
-
-    npm install
-    npm run build
-
-Extension files will be found in the `/dist` directory.
+After building, the extension files are located in the `/dist` directory.
 
 ## Manual Testing
 
-Go to `brave://extensions`, enable _Developer Mode_, click on _Load unpacked_, navigate to the `/dist` directory (created by running `npm run build`) and click _Select_.
+1. Navigate to brave://extensions.
+2. Enable Developer Mode.
+3. Click on _Load unpacked_ and choose the `/dist` directory.
+4. Visit a supported calendar like [Google Calendar](https://calendar.google.com/), [Proton Calendar](https://calendar.proton.me/), or [Skiff Calendar](https://app.skiff.com/calendar/).
+5. When creating a new event, look for the option to add a Brave Talk meeting.
 
-Now go to a supported calendar (e.g. [Google Calendar](https://calendar.google.com/), [Proton Calendar](https://calendar.proton.me/), [Skiff Calendar](https://app.skiff.com/calendar/)) and begin the process of creating a new event. During the event-creation process, you should see an option to add a Brave Talk meeting.
+### Manual Testing Checklist
+
+- Validate the calendar recognition.
+- Ensure the Brave Talk button's position and status are correct.
+- Check if the scheduled Brave Talk meeting's URL is present in the event details.
+- Confirm the URL's persistence in event details post-refresh.
+- Evaluate the Brave Talk button's functions:
+  - It should schedule a meeting when none exists.
+  - If a meeting exists, it should provide access to the meeting URL.
+- Monitor the Brave Talk button's status changes:
+  - It should show "Join the meeting" upon adding a meeting.
+  - It should revert to "create a meeting" once a meeting is removed.
 
 ## Automated Testing
 
-Testing is done against live calendars. For this reason a `.env` file needs to be created in the root of the project directory, and given credentials for the calendar you wish to test. For example, if you would like to test Proton Calendar, your `.env` will need to look something like the following:
+Tests run against live calendars. Therefore, create a `.env` file at the project's root, populating it with the credentials of the calendar you're testing. Here's a template:
 
-```
+```bash
+# Google Details
 GOOGLE_AUTH_URL="https://accounts.google.com"
 GOOGLE_USERNAME="…"
 GOOGLE_PASSWORD="…"
 GOOGLE_RECOVERY_PHONE_NUMBER="…"
 GOOGLE_STAY_SIGNED_IN="false"
 
+# Proton Details
 PROTON_AUTH_URL="https://calendar.proton.me"
 PROTON_USERNAME="…"
 PROTON_PASSWORD="…"
 PROTON_STAY_SIGNED_IN="false"
 
+# Skiff Details
 SKIFF_AUTH_URL="https://app.skiff.com/calendar/"
 SKIFF_USERNAME="…"
 SKIFF_PASSWORD="…"
 SKIFF_STAY_SIGNED_IN="false"
 ```
 
-> Note: _A template is provided via `.env.example`. Rename this to `.env` and make any necessary changes._
+> Note: You may use the `.env.example` template provided. Rename it to `.env` and modify as needed.
 
-Tests are Puppeteer driven. After running `npm install` and `npm run build` (and creating your `.env` file), you can run `npm run test` to run tests for all calendars. You may also run tests for a single calendar by passing its name along (e.g. `npm run test skiff`, `npm run test proton`).
+Run the tests using Puppeteer:
+
+```bash
+npm install
+npm run build
+npm run test # For all calendars
+# Or specify a calendar:
+npm run test skiff
+npm run test proton
+```
