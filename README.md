@@ -1,6 +1,6 @@
-# Brave Talk for Google Calendar
+# Brave Talk for Calendars
 
-This is the code for the [_Brave Talk for Calendars_](https://chrome.google.com/webstore/detail/brave-talk-for-google-cal/nimfmkdcckklbkhjjkmbjfcpaiifgamg) browser extension,
+This is the code for the [_Brave Talk for Calendars_](http://chrome.google.com/webstore/detail/nimfmkdcckklbkhjjkmbjfcpaiifgamg) browser extension,
 originally based on https://github.com/jitsi/jidesha.
 
 Learn more about Brave Talk at https://brave.com/talk/.
