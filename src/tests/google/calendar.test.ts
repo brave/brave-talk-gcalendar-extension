@@ -26,7 +26,7 @@ describe("Google Calendar", () => {
     await setupAuthenticatedBrowserSession(authenticateUser, state).catch(
       (error) => {
         console.log(error);
-        console.error("An authentication session could not be established");
+        console.error("An authenticated session could not be established");
         // Don't attempt to do any further testing
         process.exit(1);
       }
@@ -70,6 +70,40 @@ describe("Google Calendar", () => {
       Google.TALK_BUTTON_SELECTOR,
       options
     );
+    expect(braveTalkButton).toBeTruthy();
+  });
+
+  it("Persists button between panel selections", async () => {
+    /**
+     * See the following:
+     * https://github.com/brave/brave-talk-gcalendar-extension/issues/34
+     */
+
+    console.log("google:buttonPersistsBetweenPanels");
+
+    const options = { visible: true, timeout: 5_000 };
+
+    const eventTab = await state.page.waitForSelector(
+      Google.EVENT_TAB_BUTTON_SELECTOR,
+      options
+    );
+
+    const taskTab = await state.page.waitForSelector(
+      Google.TASK_TAB_BUTTON_SELECTOR,
+      options
+    );
+
+    await taskTab?.click();
+    await sleep(1_000);
+
+    await eventTab?.click();
+    await sleep(1_000);
+
+    const braveTalkButton = await state.page.waitForSelector(
+      Google.TALK_BUTTON_SELECTOR,
+      options
+    );
+
     expect(braveTalkButton).toBeTruthy();
   });
 

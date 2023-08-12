@@ -4,6 +4,17 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export function isElementVisible(element: HTMLElement): boolean {
+  if (element instanceof HTMLElement) {
+    const { display, opacity, visibility } = window.getComputedStyle(element);
+    if (display !== "none" && visibility !== "hidden" && opacity !== "0") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export async function waitForSelectorAndPause<T extends HTMLElement>(
   page: Page,
   selector: string,
