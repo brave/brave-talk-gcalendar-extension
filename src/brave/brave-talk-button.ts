@@ -8,39 +8,65 @@ function tryCloneMeetEntry() {
    * clone the existing Google Meet button, and modify its
    * contents and attributes to our needs.
    *
-   * A slightly more verbose selector is used to avoid any
+   * A slightly more verbose selector is preferred to avoid
    * reliance on generated-values (e.g. jsname='abc123')
    * which may change more frequently than the structure.
    *
-   * TODO (Sampson): Make this work with GMail Companion.
+   * Note (Sampson, 2023-08-13): The [jsname] attributes do
+   * appear to be quite long-lived, meaning they may be a
+   * better choice for selectors than previously thought.
    */
-  const selector =
-    "[data-expandable] ~ div:has(img[src*='logo_meet']):has(button)";
+  const selector = `
+    [data-expandable] ~ div:has(img[src*='logo_meet']):has(button),
+    div:has(> [jsname='gVWrzb'])
+  `;
+
   const meetEntry = document.querySelector(selector);
 
   if (meetEntry instanceof HTMLElement) {
     const talkEntry = meetEntry.cloneNode(true) as HTMLElement;
 
     // Update image and button label
-    const image = talkEntry.querySelector("img");
+    const image = talkEntry.querySelector("img, svg");
     const button = talkEntry.querySelector("button");
     const label = button?.querySelector("span");
 
     // We require both the image and button to be present
-    if (image instanceof HTMLElement && button instanceof HTMLElement) {
+    if (image instanceof Element && button instanceof HTMLElement) {
       // This ID is used to bind the click handler
       button.id = "jitsi_button_quick_add";
-      image.src = chrome.runtime.getURL("brave_talk_icon.svg");
 
-      // TODO (Sampson): Localize this string
-      const labelText = "Add a Brave Talk meeting";
-      if (label instanceof HTMLElement) {
-        label.textContent = labelText;
-      } else {
-        button.textContent = labelText;
+      /**
+       * We'll replace the Google Meet logo with our own. In the
+       * Gmail Companion case, this will be an SVG; in the Calendar
+       * case, this will be an IMG.
+       */
+      if (image instanceof HTMLImageElement) {
+        image.src = chrome.runtime.getURL("brave_talk_icon.svg");
+      } else if (image instanceof SVGElement) {
+        /**
+         * Because we're replacing an SVG element with an IMG, we
+         * want to be careful to preserve the original width. If
+         * we can't find an original width, we'll fallback to 20px,
+         * the last known width of the Google Meet logo.
+         */
+        const svgWidth = image.getAttribute("width") ?? "20";
+
+        image.replaceWith(
+          makeElement("img", {
+            width: svgWidth,
+            style: "filter: grayscale(1);",
+            src: chrome.runtime.getURL("brave_talk_icon.svg"),
+          })
+        );
       }
 
-      // Remove all js* attributes
+      (label ?? button).textContent = chrome.i18n.getMessage("labelAddMeeting");
+
+      /**
+       * To avoid confusion with the original button, we'll
+       * remove all js* attributes from the cloned element.
+       */
       const elements = talkEntry.querySelectorAll("*");
 
       for (const item of [talkEntry, ...Array.from(elements)]) {
