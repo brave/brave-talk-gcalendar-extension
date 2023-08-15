@@ -1,20 +1,25 @@
-/* 
-This file contains all the logic that interacts with the html of the google calendar site
- */
-
 import {
   createRoom,
   generateNewRoomUrl,
   isBraveTalkUrl,
 } from "../brave/brave-talk";
+
 import {
   buildQuickAddButton,
   buildFullScreenAddButton,
 } from "../brave/brave-talk-button";
 
+import { isElementVisible } from "../common";
+
 export const TALK_BUTTON_ID = "jitsi_button_quick_add";
 export const TALK_BUTTON_SELECTOR = `#${TALK_BUTTON_ID}`;
 export const BASE_URL = "https://calendar.google.com/";
+export const EVENT_TAB_BUTTON_SELECTOR = "button#tabEvent";
+export const TASK_TAB_BUTTON_SELECTOR = "button#tabTask";
+export const EVENT_PANEL_SELECTOR =
+  "[role='tabpanel'][aria-labelledby='tabEvent']";
+export const DIALOG_SELECTOR = "[role='dialog']";
+export const EVENT_DIALOG_SELECTOR = `${DIALOG_SELECTOR}:has(${EVENT_PANEL_SELECTOR})`;
 
 // we want to automatically add the brave talk meeting to
 // the event immediately when it opens in full screen mode, in two cases:
@@ -247,44 +252,69 @@ export function maintainButtonOnFullScreenEventEdit() {
   }
 }
 
+async function handleAttributesChanged({ target }: MutationRecord) {
+  // SCENARIO: Dialog for editing events was opened
+  if (target instanceof HTMLElement && target.matches(EVENT_PANEL_SELECTOR)) {
+    if (isElementVisible(target)) {
+      const dialog = target.closest(DIALOG_SELECTOR);
+      if (dialog) {
+        addButtonToQuickAdd(dialog);
+      }
+    }
+  }
+}
+
+async function handleNodesAdded(mutation: MutationRecord) {
+  // SCENARIO: Dialog for editing events was added to the DOM
+  if (mutation.addedNodes.length > 0) {
+    for (const node of mutation.addedNodes) {
+      if (node instanceof HTMLElement) {
+        const dialog = node.querySelector(DIALOG_SELECTOR);
+        if (dialog) {
+          addButtonToQuickAdd(dialog);
+          return;
+        }
+      }
+    }
+  }
+}
+
+async function handleNodesRemoved(mutation: MutationRecord) {
+  /**
+   * At times the Google Calendar UI may remove the Brave Talk
+   * button when mounting the Event Editor component. We'll watch
+   * for this, and re-add the button if the Event Editor dialog
+   * is still present.
+   */
+  if (mutation.removedNodes.length > 0) {
+    for (const node of mutation.removedNodes) {
+      if (node instanceof HTMLElement) {
+        if (node.querySelector(TALK_BUTTON_SELECTOR)) {
+          const dialog = document.querySelector(EVENT_DIALOG_SELECTOR);
+          if (dialog) {
+            addButtonToQuickAdd(dialog);
+            return;
+          }
+        }
+      }
+    }
+  }
+}
+
 export function watchForChanges() {
   const onMutation: MutationCallback = (mutations) => {
     const viewFamily = getViewFamily();
 
     // in normal calendar mode, watch for the quick add popup
     if (viewFamily === "EVENT") {
-      mutations.forEach((mutation) => {
-        /**
-         * TODO (Sampson): Listen also for attribute changes.
-         * When the user switches from the "Event" tab to the
-         * "Tasks" tab, then back to "Event", no nodes are
-         * added. Instead, the visibility of the existing
-         * Event node is toggled.
-         *
-         * There exists a bug now where opening the dialog
-         * too soon after page-load can result in the button
-         * being added, then promptly removed. I suspect this
-         * is due to the view of the dialog being refreshed
-         * after it has already been opened. Listening for
-         * attribute changes may help us to avoid getting
-         * dropped when the component is refreshed.
-         */
-        mutation.addedNodes.forEach((node) => {
-          const el =
-            node instanceof HTMLElement &&
-            node.querySelector("[role='dialog']");
-          if (el) {
-            /**
-             * TODO (Sampson): Revisit to take an alternative
-             * approach here. Rather than use a timeout, we
-             * can instead poll the DOM for the presence of
-             * expected elements (e.g. `waitForSelector`).
-             */
-            window.setTimeout(() => addButtonToQuickAdd(el), 500);
-            return;
-          }
-        });
-      });
+      for (const mutation of mutations) {
+        if (mutation.type === "childList") {
+          handleNodesAdded(mutation);
+          handleNodesRemoved(mutation);
+        } else if (mutation.type === "attributes") {
+          handleAttributesChanged(mutation);
+        }
+      }
     }
     // in full screen event edit mode, ensure our feedback button is present
     else if (viewFamily === "EVENT_EDIT") {
@@ -295,7 +325,8 @@ export function watchForChanges() {
   const watcher = new MutationObserver(onMutation);
 
   watcher.observe(document.body, {
-    attributes: false,
+    attributes: true,
+    attributeFilter: ["style"],
     childList: true,
     characterData: false,
     subtree: true,

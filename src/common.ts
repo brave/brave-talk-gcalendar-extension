@@ -4,6 +4,17 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export function isElementVisible(element: HTMLElement): boolean {
+  if (element instanceof HTMLElement) {
+    const { display, opacity, visibility } = window.getComputedStyle(element);
+    if (display !== "none" && visibility !== "hidden" && opacity !== "0") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export async function waitForSelectorAndPause<T extends HTMLElement>(
   page: Page,
   selector: string,
@@ -136,6 +147,35 @@ export function simulateFocusEvents(
     element.dispatchEvent(new FocusEvent(eventType, { bubbles: true }));
   }
 }
+
+export function setFieldValue(
+  element: HTMLInputElement | HTMLTextAreaElement,
+  value: string
+): void {
+  const focused = document.activeElement;
+
+  simulateFocusEvents(element, "focus");
+
+  /**
+   * As is the case with FocusEvents above and below, we
+   * are simulating several keyboard and input events to
+   * ensure Skiff Calendar's internal state is updated.
+   */
+  element.value = value;
+  for (const type of ["keydown", "keypress", "input", "keyup"]) {
+    element.dispatchEvent(new Event(type, { bubbles: true }));
+  }
+
+  simulateFocusEvents(element, "blur");
+
+  /**
+   * Restore focus to original element, if needed.
+   */
+  if (focused instanceof HTMLElement) {
+    simulateFocusEvents(focused, "focus");
+  }
+}
+
 /**
  *
  * @param tag Tag name of the element to create.

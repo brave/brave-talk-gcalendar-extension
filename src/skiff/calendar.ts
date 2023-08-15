@@ -21,7 +21,7 @@ export const LOCATION_FIELD_SELECTOR = "[data-test='location-input-field']";
 export const CANCEL_BUTTON_SELECTOR = "[data-test='dialog-cancel']";
 export const CONFIRM_REMOVE_BUTTON_SELECTOR = "[data-test='confirm-Remove']";
 
-import { clickElement, createElement, simulateFocusEvents } from "../common";
+import { clickElement, createElement, setFieldValue } from "../common";
 
 export function isSkiff(address?: string): boolean {
   let url: URL = new URL(address ? address : window.location.href);
@@ -172,35 +172,6 @@ export function getBraveMeeting(): URL | null {
   }
 
   return null;
-}
-
-// TODO (Sampson): Move this to common.ts
-export function setFieldValue(
-  element: HTMLInputElement | HTMLTextAreaElement,
-  value: string
-): void {
-  const focused = document.activeElement;
-
-  simulateFocusEvents(element, "focus");
-
-  /**
-   * As is the case with FocusEvents above and below, we
-   * are simulating several keyboard and input events to
-   * ensure Skiff Calendar's internal state is updated.
-   */
-  element.value = value;
-  for (const type of ["keydown", "keypress", "input", "keyup"]) {
-    element.dispatchEvent(new Event(type, { bubbles: true }));
-  }
-
-  simulateFocusEvents(element, "blur");
-
-  /**
-   * Restore focus to original element, if needed.
-   */
-  if (focused instanceof HTMLElement) {
-    simulateFocusEvents(focused, "focus");
-  }
 }
 
 export function handleButtonClick(event: MouseEvent): void {

@@ -83,15 +83,19 @@ async function authenticateUserLoginCaptcha(page: Page): Promise<void> {
     .waitForSelector(auth.selectors.NEXT_BUTTON, options)
     .then((elementHandle) => elementHandle?.click());
 
-  await page.waitForSelector(auth.selectors.CAPTCHA_IMAGE, options);
+  try {
+    await page.waitForSelector(auth.selectors.CAPTCHA_IMAGE, options);
 
-  /**
-   * We've come across a captcha image. We will wait for up to 60 seconds
-   * for the user to solve the captcha. If the user does not solve the
-   * captcha in time, we will throw an error.
-   */
+    /**
+     * We've come across a captcha image. We will wait for up to 60 seconds
+     * for the user to solve the captcha. If the user does not solve the
+     * captcha in time, we will throw an error.
+     */
 
-  console.log("google:authenticateUserLoginCaptcha: waiting for solution");
+    console.log("google:authenticateUserLoginCaptcha: waiting for solution");
+  } catch (e) {
+    console.log("google:authenticateUserLoginCaptcha: no captcha found");
+  }
 
   await page
     .waitForSelector(
@@ -194,10 +198,14 @@ export async function authenticateUser(page: Page): Promise<void> {
     throw new Error("AUTH_URL not found");
   }
 
-  await page.goto(auth.AUTH_URL, {
-    waitUntil: "networkidle0",
-    timeout: 5_000,
-  });
+  await page
+    .goto(auth.AUTH_URL, {
+      waitUntil: "networkidle0",
+      timeout: 5_000,
+    })
+    .catch(() => {
+      console.log("google:authenticateUser: page didn't idle in time");
+    });
 
   const pageType = await getPageType(page);
 
