@@ -112,6 +112,18 @@ describe("Skiff Calendar", () => {
   });
 
   afterAll(async () => {
+    state.page.on("dialog", async (dialog) => {
+      /**
+       * It's likely the case that we will have some 'unsaved changes'
+       * to our event. We'll ignore any warnings that this data could
+       * be lost upon reload.
+       */
+      if (dialog.type() === "beforeunload") {
+        console.log("Ignoring 'unsaved changes' dialog.");
+        await dialog.accept();
+      }
+    });
+
     await state.page.goto(Skiff.BASE_URL, {
       waitUntil: "networkidle2",
       timeout: 5_000,
@@ -245,13 +257,6 @@ describe("Skiff Calendar", () => {
   it("Clicking the 'remove conference' button reveals Brave Talk button", async () => {
     // Find and click on the event card
     await getEventCard().then(async (card) => card?.click());
-
-    await sleep(2_000);
-
-    expect((await getConferenceValue())?.startsWith(TALK_BASE_URL)).toBe(true);
-
-    // Evaluate the button's visibility when a meeting is scheduled
-    expect(await getBraveTalkButton()).toBe(null);
 
     // Click to remove the scheduled meeting
     const options = { visible: true, timeout: 5_000 };

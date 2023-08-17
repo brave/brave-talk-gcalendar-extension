@@ -6,7 +6,14 @@ export async function authenticateUser(page: Page): Promise<void> {
     throw new Error("AUTH_URL not found");
   }
 
-  await page.goto(auth.AUTH_URL);
+  await page
+    .goto(auth.AUTH_URL, {
+      waitUntil: "networkidle2",
+      timeout: 5_000,
+    })
+    .catch(() => {
+      console.log("Failed to achieve 'networkidle2'", page.url());
+    });
 
   // If we're already logged in, we can skip the rest
   if (page.url() === auth.AUTH_URL) {
