@@ -22,5 +22,13 @@
     "iconAltText": {
         "message": "Brave Talk",
         "description": "Alt text for the Brave Talk icon"
+    },
+    "selectCalendars": {
+        "message": "Select Calendars",
+        "description": "The title text shown on the calendar-selection page"
+    },
+    "selectCalendarsInfo": {
+        "message": "Where would you like to integrate Brave Talk?",
+        "description": "The question posed to the user on the calendar-selection page"
     }
 }

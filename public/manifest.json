@@ -3,39 +3,18 @@
   "name": "__MSG_extName__",
   "description": "__MSG_extDescription__",
   "default_locale": "en_US",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "minimum_chrome_version": "97",
   "icons": {
     "16": "brave_talk_icon_16x.png",
     "48": "brave_talk_icon_48x.png",
     "128": "brave_talk_icon_128x.png"
   },
-  "permissions": ["storage"],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://app.skiff.com/*",
-        "https://calendar.proton.me/*",
-        "https://calendar.google.com/calendar/*"
-      ],
-      "js": [
-        "content_script.js"
-      ],
-      "css": [
-        "all.css"
-      ],
-      "all_frames": true,
-      "run_at": "document_end"
-    },
-    {
-      "matches": [
-        "https://app.skiff.com/*"
-      ],
-      "css": [
-        "skiff.css"
-      ]
-    }
-  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "optional_permissions": ["scripting", "storage"],
+  "optional_host_permissions": ["https://*/*"],
   "web_accessible_resources": [
     {
       "resources": [
