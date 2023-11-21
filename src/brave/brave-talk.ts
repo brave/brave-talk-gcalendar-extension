@@ -1,6 +1,7 @@
 export const TALK_BASE_URL = "https://talk.brave.com";
 export const POPUP_WINDOW_NAME = "talk_extension_popup";
-export const ROOM_URL_PATTERN = /https:\/\/talk\.brave\.com\/[a-zA-Z0-9_-]{43}/;
+export const ROOM_URL_PATTERN =
+  /^https:\/\/talk\.brave\.com\/[a-zA-Z0-9_-]{43}/;
 
 /**
  * Generates new room name.  This is how Brave Talk does it.
