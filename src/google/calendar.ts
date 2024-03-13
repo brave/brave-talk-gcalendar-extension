@@ -54,7 +54,7 @@ export function isGoogleCalendar(address?: string): boolean {
 // The "quick add" screen is the inline event creation dialog,
 // invoked usually by clicking the "create +" button. We add a button
 // here, and get it to invoke the full-screen "edit" mode where the full functionaltiy is.
-function addButtonToQuickAdd(quickAddDialog: Element) {
+function addButtonToQuickAdd(quickAddDialog: HTMLElement) {
   // skip if our button is already added
   if (document.querySelector("#jitsi_button_quick_add")) {
     return;
@@ -85,24 +85,26 @@ function addButtonToQuickAdd(quickAddDialog: Element) {
       window?.chrome?.storage?.sync?.set({ scheduleAutoCreateMeeting: "true" });
       // this is clicking the "more options" button on the quick add dialog,
       // which causes the full screen event editor to appear
-      findMoreOptionsButton()?.click();
+      findMoreOptionsButton(quickAddDialog)?.click();
     });
   }
 }
 
-function findMoreOptionsButton(): HTMLElement | undefined {
-  const potentialSelectors = [
-    // orignal version
-    'div[role="button"][jsname="rhPddf"]',
-    // updated as of 24 Aug 2022
-    'button[jsname="rhPddf"]',
-  ];
+function findMoreOptionsButton(
+  quickAddDialog: HTMLElement
+): HTMLElement | undefined {
+  /**
+   * This method of locating the "More Options" button is a bit fragile, but
+   * it appears to be the best we can do for now. The button itself is not
+   * very distinct from others in the document.
+   */
+  const isNot = "[data-bubble-scrollable-root] *, [data-tooltip-id]";
+  const selector = `button[jscontroller][jsaction][jsname][jslog]:not(${isNot})`;
+  const button = quickAddDialog.querySelector(selector);
 
-  for (const selector of potentialSelectors) {
-    const button = document.querySelector<HTMLElement>(selector);
-    if (button) {
-      return button;
-    }
+  if (button instanceof HTMLElement) {
+    console.log("brave-talk-gcalendar-extension: More Options button found");
+    return button;
   }
 
   console.warn("brave-talk-gcalendar-extension: More Options button not found");
@@ -257,7 +259,7 @@ async function handleAttributesChanged({ target }: MutationRecord) {
   if (target instanceof HTMLElement && target.matches(EVENT_PANEL_SELECTOR)) {
     if (isElementVisible(target)) {
       const dialog = target.closest(DIALOG_SELECTOR);
-      if (dialog) {
+      if (dialog instanceof HTMLElement) {
         addButtonToQuickAdd(dialog);
       }
     }
@@ -270,7 +272,7 @@ async function handleNodesAdded(mutation: MutationRecord) {
     for (const node of mutation.addedNodes) {
       if (node instanceof HTMLElement) {
         const dialog = node.querySelector(DIALOG_SELECTOR);
-        if (dialog) {
+        if (dialog instanceof HTMLElement) {
           addButtonToQuickAdd(dialog);
           return;
         }
@@ -291,7 +293,7 @@ async function handleNodesRemoved(mutation: MutationRecord) {
       if (node instanceof HTMLElement) {
         if (node.querySelector(TALK_BUTTON_SELECTOR)) {
           const dialog = document.querySelector(EVENT_DIALOG_SELECTOR);
-          if (dialog) {
+          if (dialog instanceof HTMLElement) {
             addButtonToQuickAdd(dialog);
             return;
           }
