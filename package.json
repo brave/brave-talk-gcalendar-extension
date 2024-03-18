@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/brave/brave-talk-gcalendar-extension#readme",
   "devDependencies": {
-    "@types/chrome": "0.0.238",
+    "@types/chrome": "0.0.263",
     "@types/jest": "29.5.2",
     "copy-webpack-plugin": "11.0.0",
     "dotenv": "16.3.1",
