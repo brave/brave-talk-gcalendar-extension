@@ -12,7 +12,6 @@ jobs:
           node-version: 16
           cache: npm
       - run: npm ci
-      - run: npm audit
       - run: npm run format:check
       - run: npm run build
       - name: Upload built outputs
@@ -21,3 +20,4 @@ jobs:
           name: dist
           path: ./dist
           if-no-files-found: error    
+      - run: npm audit
