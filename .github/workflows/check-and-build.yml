@@ -11,6 +11,8 @@ jobs:
         with:
           node-version: 16
           cache: npm
+      - if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' }}
+        run: npm audit  
       - run: npm ci
       - run: npm run format:check
       - run: npm run build
@@ -19,5 +21,5 @@ jobs:
         with:
           name: dist
           path: ./dist
-          if-no-files-found: error    
-      - run: npm audit
+          if-no-files-found: error
+          
