@@ -29,7 +29,7 @@ function tryCloneMeetEntry() {
     // Update image and button label
     const image = talkEntry.querySelector("img, svg");
     const button = talkEntry.querySelector("button");
-    const label = button?.querySelector("span");
+    const label = button?.querySelector("span[jsname='V67aGc']");
 
     // We require both the image and button to be present
     if (image instanceof Element && button instanceof HTMLElement) {
