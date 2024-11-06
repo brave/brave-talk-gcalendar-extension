@@ -3,7 +3,7 @@
   "name": "__MSG_extName__",
   "description": "__MSG_extDescription__",
   "default_locale": "en_US",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "minimum_chrome_version": "97",
   "icons": {
     "16": "brave_talk_icon_16x.png",
