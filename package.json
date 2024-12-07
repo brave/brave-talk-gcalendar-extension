@@ -23,7 +23,7 @@
     "@types/chrome": "0.0.263",
     "@types/jest": "29.5.2",
     "copy-webpack-plugin": "11.0.0",
-    "dotenv": "16.3.1",
+    "dotenv": "16.4.7",
     "husky": "8.0.3",
     "jest": "29.5.0",
     "jest-environment-jsdom": "29.5.0",
