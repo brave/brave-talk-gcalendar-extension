@@ -3,12 +3,14 @@
   "version": "3.0.0",
   "description": "Brave Talk extension",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "jest --verbose --runInBand",
     "build": "webpack --mode production",
+    "zip": "node scripts/create-zip.js",
     "watch": "webpack --mode development --devtool inline-source-map --watch",
-    "format": "prettier --write src/",
-    "format:check": "prettier --check src/",
+    "format": "prettier --write src/ scripts/",
+    "format:check": "prettier --check src/ scripts/",
     "prepare": "husky install"
   },
   "repository": {
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@types/chrome": "0.1.1",
     "@types/jest": "29.5.14",
+    "archiver": "^7.0.1",
     "copy-webpack-plugin": "11.0.0",
     "dotenv": "16.5.0",
     "husky": "8.0.3",
@@ -29,7 +32,7 @@
     "jest-environment-jsdom": "29.7.0",
     "jest-puppeteer": "9.0.2",
     "lint-staged": "^16.1.2",
-    "prettier": "2.8.8",
+    "prettier": "^3.6.2",
     "puppeteer-core": "23.11.1",
     "ts-jest": "29.3.4",
     "ts-loader": "9.4.3",
