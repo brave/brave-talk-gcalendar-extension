@@ -9,12 +9,6 @@ import {
 
 import { isProtonCalendar, listenForEventDialog } from "./proton/calendar";
 
-import {
-  isSkiff,
-  watchForChanges as skiffWatchForChanges,
-  handleAutoCreateMeetingFlag as skiffCheckAutoCreate,
-} from "./skiff/calendar";
-
 // TODO (Sampson): Move this to a dedicated component
 watchForGmailCompanion();
 
@@ -34,8 +28,4 @@ if (isGoogleCalendar()) {
 } else if (isProtonCalendar()) {
   console.log(message.replace("%platform%", "Proton Calendar"));
   listenForEventDialog();
-} else if (isSkiff()) {
-  console.log(message.replace("%platform%", "Skiff Calendar"));
-  skiffCheckAutoCreate();
-  skiffWatchForChanges();
 }
