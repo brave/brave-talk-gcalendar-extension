@@ -54,7 +54,6 @@ module.exports = {
     extensions: [".ts", ".tsx", ".js"],
   },
   plugins: [
-    // Custom plugin to update source manifest.json before copying
     {
       apply: (compiler) => {
         compiler.hooks.beforeRun.tapAsync(

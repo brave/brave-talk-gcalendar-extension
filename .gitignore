@@ -12,3 +12,6 @@ tmp/
 src/scripts/*.js
 .env
 .vscode/
+
+# Version zip files
+*.zip
