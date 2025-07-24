@@ -14,7 +14,6 @@
   "content_scripts": [
     {
       "matches": [
-        "https://app.skiff.com/*",
         "https://calendar.proton.me/*",
         "https://calendar.google.com/calendar/*"
       ],
@@ -26,14 +25,6 @@
       ],
       "all_frames": true,
       "run_at": "document_end"
-    },
-    {
-      "matches": [
-        "https://app.skiff.com/*"
-      ],
-      "css": [
-        "skiff.css"
-      ]
     }
   ],
   "web_accessible_resources": [
@@ -43,7 +34,6 @@
         "brave_talk_icon.svg"
       ],
       "matches": [
-        "https://app.skiff.com/*",
         "https://calendar.proton.me/*",
         "https://calendar.google.com/*"
       ]

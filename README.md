@@ -21,7 +21,7 @@ After building, the extension files are located in the `/dist` directory.
 1. Navigate to brave://extensions.
 2. Enable Developer Mode.
 3. Click on _Load unpacked_ and choose the `/dist` directory.
-4. Visit a supported calendar like [Google Calendar](https://calendar.google.com/), [Proton Calendar](https://calendar.proton.me/), or [Skiff Calendar](https://app.skiff.com/calendar/).
+4. Visit a supported calendar like [Google Calendar](https://calendar.google.com/) or [Proton Calendar](https://calendar.proton.me/).
 5. When creating a new event, look for the option to add a Brave Talk meeting.
 
 ### Manual Testing Checklist
@@ -54,12 +54,6 @@ PROTON_AUTH_URL="https://calendar.proton.me"
 PROTON_USERNAME="…"
 PROTON_PASSWORD="…"
 PROTON_STAY_SIGNED_IN="false"
-
-# Skiff Details
-SKIFF_AUTH_URL="https://app.skiff.com/calendar/"
-SKIFF_USERNAME="…"
-SKIFF_PASSWORD="…"
-SKIFF_STAY_SIGNED_IN="false"
 ```
 
 > Note: You may use the `.env.example` template provided. Rename it to `.env` and modify as needed.
@@ -71,6 +65,5 @@ npm install
 npm run build
 npm run test # For all calendars
 # Or specify a calendar:
-npm run test skiff
 npm run test proton
 ```

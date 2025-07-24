@@ -159,7 +159,8 @@ export function setFieldValue(
   /**
    * As is the case with FocusEvents above and below, we
    * are simulating several keyboard and input events to
-   * ensure Skiff Calendar's internal state is updated.
+   * ensure the Calendar's internal state is reliably
+   * updated.
    */
   element.value = value;
   for (const type of ["keydown", "keypress", "input", "keyup"]) {
