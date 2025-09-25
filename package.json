@@ -34,7 +34,7 @@
     "lint-staged": "16.1.5",
     "prettier": "3.6.2",
     "puppeteer-core": "23.11.1",
-    "ts-jest": "29.4.1",
+    "ts-jest": "29.4.3",
     "ts-loader": "9.5.4",
     "typescript": "5.9.2",
     "webpack": "5.101.3",
