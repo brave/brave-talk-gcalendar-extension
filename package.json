@@ -1,6 +1,6 @@
 {
   "name": "brave-talk-extension",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Brave Talk extension",
   "main": "index.js",
   "type": "module",
