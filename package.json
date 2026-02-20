@@ -33,7 +33,7 @@
     "jest-puppeteer": "9.0.2",
     "lint-staged": "16.2.7",
     "prettier": "3.6.2",
-    "puppeteer-core": "23.11.1",
+    "puppeteer-core": "24.37.3",
     "ts-jest": "29.4.5",
     "ts-loader": "9.5.4",
     "typescript": "5.9.3",
