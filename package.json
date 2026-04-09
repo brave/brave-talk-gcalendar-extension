@@ -35,7 +35,7 @@
     "prettier": "3.8.1",
     "puppeteer-core": "24.40.0",
     "ts-jest": "29.4.6",
-    "ts-loader": "9.5.4",
+    "ts-loader": "9.5.7",
     "typescript": "5.9.3",
     "webpack": "5.105.4",
     "webpack-cli": "7.0.2"
