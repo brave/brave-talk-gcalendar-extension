@@ -1,14 +1,19 @@
 {
   "compilerOptions": {
 
-    /* Language and Environment */
-    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "target": "ES2024",
     "lib": [
-      "ES2015",
+      "ES2024",
       "DOM",
       "DOM.Iterable"
-    ],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
-    "module": "commonjs",                                /* Specify what module code is generated. */
+    ],
+    "module": "commonjs",
+    "types": [
+      "chrome",
+      "jest",
+      "jsdom",
+      "node"
+    ],
 
     /* Interop Constraints */
     "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
