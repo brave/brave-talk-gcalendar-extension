@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest --verbose --runInBand",
     "build": "webpack --mode production",
-    "zip": "node scripts/create-zip.js",
+    "zip": "node scripts/create-zip.ts",
     "watch": "webpack --mode development --devtool inline-source-map --watch",
     "format": "prettier --write src/ scripts/",
     "format:check": "prettier --check src/ scripts/",
