@@ -21,6 +21,9 @@
     "url": "https://github.com/brave/brave-talk-gcalendar-extension/issues"
   },
   "homepage": "https://github.com/brave/brave-talk-gcalendar-extension#readme",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
     "@types/chrome": "0.1.39",
     "@types/jest": "30.0.0",
