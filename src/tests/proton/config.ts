@@ -11,7 +11,7 @@ export const auth = {
     STAY_SIGNED_IN: "input[id='staySignedIn'][type='checkbox']",
     SUBMIT_BUTTON: 'button[type="submit"]',
   },
-};
+} as const;
 
 export const selectors = {
   TALK_BUTTON: `#${TALK_BUTTON_ID}`,
@@ -27,4 +27,4 @@ export const selectors = {
   EVENT_LOCATION_INPUT: "input[id='event-location-input']",
   EVENT_POPUP_SAVE_BUTTON: "[data-testid='create-event-popover:save']",
   EVENT_MODAL_SAVE_BUTTON: "[data-testid='create-event-modal:save']",
-};
+} as const;
