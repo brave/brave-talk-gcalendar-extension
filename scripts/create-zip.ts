@@ -11,7 +11,7 @@ const distDir = join(__dirname, "..", "dist");
 const outputPath = join(__dirname, "..", `${version}.zip`);
 const tempOutputPath = join(__dirname, "..", `${version}.zip.tmp`);
 
-async function unlinkIfExists(path) {
+async function unlinkIfExists(path: string) {
   if (existsSync(path)) {
     await unlink(path);
     console.log(`Cleaned up ${path}`);
@@ -21,7 +21,7 @@ async function unlinkIfExists(path) {
   return false;
 }
 
-async function onStreamClose(archive) {
+async function onStreamClose(archive: archiver.Archiver) {
   try {
     await unlinkIfExists(outputPath);
     await rename(tempOutputPath, outputPath);
@@ -33,7 +33,7 @@ async function onStreamClose(archive) {
   }
 }
 
-function onArchiveWarning(err) {
+function onArchiveWarning(err: Error & { code?: string }) {
   if (err.code === "ENOENT") {
     console.warn("Warning:", err);
     return;
@@ -42,7 +42,7 @@ function onArchiveWarning(err) {
   throw err;
 }
 
-async function onArchiveError(err) {
+async function onArchiveError(err: Error) {
   console.error("Archive error:", err);
   await unlinkIfExists(tempOutputPath);
   throw err;

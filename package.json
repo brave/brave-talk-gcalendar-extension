@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest --verbose --runInBand",
     "build": "webpack --mode production",
-    "zip": "node scripts/create-zip.js",
+    "zip": "node scripts/create-zip.ts",
     "watch": "webpack --mode development --devtool inline-source-map --watch",
     "format": "prettier --write src/ scripts/",
     "format:check": "prettier --check src/ scripts/",
@@ -21,6 +21,9 @@
     "url": "https://github.com/brave/brave-talk-gcalendar-extension/issues"
   },
   "homepage": "https://github.com/brave/brave-talk-gcalendar-extension#readme",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
     "@types/chrome": "0.1.39",
     "@types/jest": "30.0.0",

@@ -12,7 +12,7 @@ export const auth = {
     ACCOUNT_LIST_ENTRY: `div[data-email="${process.env.GOOGLE_USERNAME}"]`,
     WORKSPACE_SIGN_IN_BUTTON: "a.button[href^='https://accounts.google.com/']",
   },
-};
+} as const;
 
 export const selectors = {
   CREATE_BUTTON: "[role='button'][aria-label='Create']",
@@ -23,4 +23,4 @@ export const selectors = {
   EVENT_DELETE_BUTTON: "button[aria-label='Delete event']",
   EVENT_PREVIEW_LOCATION: "#xDetDlgLoc",
   EVENT_CHIP: "[role='button'][data-eventchip]",
-};
+} as const;
