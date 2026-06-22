@@ -45,7 +45,8 @@
   },
   "overrides": {
     "semver": "7.8.0",
-    "optionator": "0.9.4"
+    "optionator": "0.9.4",
+    "js-yaml": "4.2.0"
   },
   "lint-staged": {
     "src/*.ts": "prettier --write"
