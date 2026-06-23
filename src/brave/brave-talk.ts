@@ -41,7 +41,7 @@ export function isBraveTalkUrl(text: string): boolean {
  * we continue to do this from the content script.
  */
 export function joinRoom(roomUrl: string) {
-  if (!ROOM_URL_PATTERN.test(roomUrl)) {
+  if (!isBraveTalkUrl(roomUrl)) {
     throw new Error(`Invalid room URL: ${roomUrl}`);
   }
 
@@ -108,7 +108,7 @@ export function openWindow(
 }
 
 export function createRoom(roomUrl: string) {
-  if (!ROOM_URL_PATTERN.test(roomUrl)) {
+  if (!isBraveTalkUrl(roomUrl)) {
     throw new Error(`Invalid room URL: ${roomUrl}`);
   }
   const createUrl = `${roomUrl}?create_only=y`;

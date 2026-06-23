@@ -208,6 +208,7 @@ function updateToAddMeetingButton() {
  * Updates the url for the button.
  */
 function updateToJoinMeetingButton(joinUrl: string) {
+  if (!isBraveTalkUrl(joinUrl)) return;
   const button = document.querySelector("#jitsi_button a");
   if (button) {
     button.textContent = "Join your Brave Talk meeting now";
