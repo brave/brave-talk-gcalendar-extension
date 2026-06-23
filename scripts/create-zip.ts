@@ -2,7 +2,7 @@ import { unlink, rename } from "node:fs/promises";
 import { createWriteStream, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import archiver from "archiver";
+import { ZipArchive } from "archiver";
 import packageJson from "../package.json" with { type: "json" };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -21,7 +21,7 @@ async function unlinkIfExists(path: string) {
   return false;
 }
 
-async function onStreamClose(archive: archiver.Archiver) {
+async function onStreamClose(archive: ZipArchive) {
   try {
     await unlinkIfExists(outputPath);
     await rename(tempOutputPath, outputPath);
@@ -59,7 +59,7 @@ async function createZip() {
   await unlinkIfExists(tempOutputPath);
 
   const output = createWriteStream(tempOutputPath);
-  const archive = archiver("zip", { zlib: { level: 9 } });
+  const archive = new ZipArchive({ zlib: { level: 9 } });
 
   archive.on("error", onArchiveError);
   archive.on("warning", onArchiveWarning);
