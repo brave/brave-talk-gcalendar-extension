@@ -35,7 +35,7 @@
     "jest-environment-jsdom": "30.4.1",
     "jest-puppeteer": "11.0.0",
     "lint-staged": "17.0.5",
-    "prettier": "3.8.3",
+    "prettier": "3.8.4",
     "puppeteer-core": "25.0.4",
     "ts-jest": "29.4.9",
     "ts-loader": "9.5.7",
