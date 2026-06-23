@@ -384,19 +384,21 @@ function addButtonToGmailCal(quickAddDialog: HTMLElement) {
 
 export function watchForGmailCompanion() {
   const onMutation: MutationCallback = (mutations) => {
-    // in gamil calendar mode, watch for the quick add popup
+    // in gmail calendar mode, watch for the quick add popup
     mutations.forEach((mutation) => {
-      let dlg;
+      let dialogElement: HTMLElement | null = null;
       mutation.addedNodes.forEach((node) => {
-        const el =
-          node instanceof HTMLElement && node.querySelector("[role='dialog']");
-        if (el) {
-          dlg = el;
+        const mutatedElement =
+          node instanceof HTMLElement
+            ? node.querySelector(DIALOG_SELECTOR)
+            : null;
+        if (mutatedElement instanceof HTMLElement) {
+          dialogElement = mutatedElement;
           return;
         }
       });
-      if (dlg) {
-        addButtonToGmailCal(dlg);
+      if (dialogElement) {
+        addButtonToGmailCal(dialogElement);
       }
     });
   };
