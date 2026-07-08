@@ -108,8 +108,8 @@ export function buildQuickAddButton(tabPanel: HTMLElement) {
 
   // prettier-ignore
   const element = makeElement("div", { class: "m2hqkd" },
-    makeElement("div", { class: "fy8IH xI9Bs FrRgdd" },
-      makeElement("div", { class: "FkXdCf HyA7Fb" },
+    makeElement("div", { class: "Shmoqf" },
+      makeElement("div", { class: "pHox4e HyA7Fb" },
         makeElement("i", { class: "google-material-icons meh4fc hggPq GyffFb", "aria-hidden": "true" },
           makeElement("div", {},
             makeElement("img", { class: "Gxo8Ie", src: chrome.runtime.getURL("brave_talk_icon.svg"), "aria-hidden": "true" })))),
