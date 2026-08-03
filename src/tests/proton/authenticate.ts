@@ -1,5 +1,5 @@
 import { auth } from "./config";
-import { Page } from "puppeteer-core";
+import type { Page } from "puppeteer-core";
 
 export async function authenticateUser(page: Page): Promise<void> {
   if (!auth.AUTH_URL) {

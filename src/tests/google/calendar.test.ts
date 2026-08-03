@@ -1,5 +1,5 @@
-require("dotenv").config();
-import { Browser, Page, PuppeteerLifeCycleEvent } from "puppeteer-core";
+import "dotenv/config";
+import type { Browser, Page, PuppeteerLifeCycleEvent } from "puppeteer-core";
 import {
   setupAuthenticatedBrowserSession,
   tearDownBrowserInstance,

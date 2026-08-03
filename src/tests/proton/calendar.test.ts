@@ -1,5 +1,5 @@
-require("dotenv").config();
-import { Browser, Page, ElementHandle } from "puppeteer-core";
+import "dotenv/config";
+import type { Browser, Page, ElementHandle } from "puppeteer-core";
 import {
   setupAuthenticatedBrowserSession,
   tearDownBrowserInstance,

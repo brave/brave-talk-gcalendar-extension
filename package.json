@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "jest --selectProjects unit --verbose --runInBand",
-    "test:e2e": "jest --selectProjects e2e --verbose --runInBand",
+    "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --selectProjects e2e --verbose --runInBand",
     "test:all": "jest --verbose --runInBand",
     "build": "webpack --mode production",
     "zip": "node scripts/create-zip.ts",
@@ -36,7 +36,6 @@
     "husky": "9.1.7",
     "jest": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
-    "jest-puppeteer": "11.0.0",
     "lint-staged": "17.0.5",
     "prettier": "3.8.4",
     "puppeteer-core": "25.0.4",
