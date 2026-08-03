@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "jest --verbose --runInBand",
+    "test": "jest --selectProjects unit --verbose --runInBand",
+    "test:e2e": "jest --selectProjects e2e --verbose --runInBand",
+    "test:all": "jest --verbose --runInBand",
     "build": "webpack --mode production",
     "zip": "node scripts/create-zip.ts",
     "watch": "webpack --mode development --devtool inline-source-map --watch",
