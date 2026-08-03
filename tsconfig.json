@@ -9,6 +9,8 @@
     ],
     "module": "esnext",
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "types": [
       "chrome",
       "jest",

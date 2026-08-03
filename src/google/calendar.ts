@@ -2,14 +2,14 @@ import {
   createRoom,
   generateNewRoomUrl,
   isBraveTalkUrl,
-} from "../brave/brave-talk";
+} from "../brave/brave-talk.ts";
 
 import {
   buildQuickAddButton,
   buildFullScreenAddButton,
-} from "../brave/brave-talk-button";
+} from "../brave/brave-talk-button.ts";
 
-import { isElementVisible } from "../common";
+import { isElementVisible } from "../common.ts";
 
 export const TALK_BUTTON_ID = "jitsi_button_quick_add";
 export const TALK_BUTTON_SELECTOR = `#${TALK_BUTTON_ID}`;

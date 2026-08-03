@@ -1,5 +1,5 @@
-import * as BraveTalk from "../brave/brave-talk";
-import { createElement } from "../common";
+import * as BraveTalk from "../brave/brave-talk.ts";
+import { createElement } from "../common.ts";
 
 const SELECTORS = {
   modals: `

@@ -1,4 +1,4 @@
-import { auth } from "./config";
+import { auth } from "./config.ts";
 import type { Page } from "puppeteer-core";
 
 export async function authenticateUser(page: Page): Promise<void> {
