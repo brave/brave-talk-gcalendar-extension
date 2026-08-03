@@ -1,15 +1,17 @@
 import "dotenv/config";
+import { describe, it, before, after } from "node:test";
+import assert from "node:assert/strict";
 import type { Browser, Page, ElementHandle } from "puppeteer-core";
 import {
   setupAuthenticatedBrowserSession,
   tearDownBrowserInstance,
-} from "../test.common";
-import * as Proton from "../../proton/calendar";
-import { sleep } from "../../common";
-import { TALK_BASE_URL } from "../../brave/brave-talk";
-import { auth, selectors } from "./config";
-import { authenticateUser } from "./authenticate";
-import { deleteEventByTitle } from "./deleteEventByTitle";
+} from "../test.common.ts";
+import * as Proton from "../../proton/calendar.ts";
+import { sleep } from "../../common.ts";
+import { TALK_BASE_URL } from "../../brave/brave-talk.ts";
+import { auth, selectors } from "./config.ts";
+import { authenticateUser } from "./authenticate.ts";
+import { deleteEventByTitle } from "./deleteEventByTitle.ts";
 
 describe("Proton Calendar", () => {
   const state = {
@@ -19,12 +21,12 @@ describe("Proton Calendar", () => {
     createdEventTitle: null as unknown as string,
   };
 
-  beforeAll(async () => {
+  before(async () => {
     state.createdEventTitle = Date.now().toString();
     await setupAuthenticatedBrowserSession(authenticateUser, state);
   });
 
-  afterAll(async () => {
+  after(async () => {
     await deleteEventByTitle(state.page, state.createdEventTitle);
     await tearDownBrowserInstance(state.browser, auth.STAY_SIGNED_IN);
   });
@@ -32,7 +34,7 @@ describe("Proton Calendar", () => {
   it("Properly identifies Proton Calendar", async () => {
     try {
       await state.page.waitForNetworkIdle();
-      expect(Proton.isProtonCalendar(state.page.url())).toBe(true);
+      assert.equal(Proton.isProtonCalendar(state.page.url()), true);
     } catch (error) {
       console.error(error);
     }
@@ -50,7 +52,7 @@ describe("Proton Calendar", () => {
         selectors.TALK_BUTTON,
         options
       );
-      expect(braveTalk).toBeTruthy();
+      assert.ok(braveTalk);
     } catch (error) {
       console.error(error);
     }
@@ -63,7 +65,7 @@ describe("Proton Calendar", () => {
         state.browser.waitForTarget((t) => t.url().startsWith(TALK_BASE_URL)),
         button?.click(),
       ]);
-      expect(target).toBeTruthy();
+      assert.ok(target);
     } catch (error) {
       console.error(error);
     }
@@ -85,7 +87,7 @@ describe("Proton Calendar", () => {
        * it again later in our persistence test.
        */
       state.braveMeetingUrl = locationValue as string;
-      expect(locationValue?.startsWith(TALK_BASE_URL)).toBe(true);
+      assert.equal(locationValue?.startsWith(TALK_BASE_URL), true);
     } catch (error) {
       console.error(error);
     }
@@ -162,7 +164,7 @@ describe("Proton Calendar", () => {
         (el) => (el as HTMLInputElement).value
       );
 
-      expect(locationValue).toBe(state.braveMeetingUrl);
+      assert.equal(locationValue, state.braveMeetingUrl);
     } catch (error) {
       console.error(error);
     }

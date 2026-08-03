@@ -1,15 +1,17 @@
 import "dotenv/config";
-import type { Browser, Page, PuppeteerLifeCycleEvent } from "puppeteer-core";
+import { describe, it, before, after } from "node:test";
+import assert from "node:assert/strict";
+import type { Browser, Page } from "puppeteer-core";
 import {
   setupAuthenticatedBrowserSession,
   tearDownBrowserInstance,
-} from "../test.common";
-import * as Google from "../../google/calendar";
-import { sleep } from "../../common";
-import { TALK_BASE_URL } from "../../brave/brave-talk";
-import { auth, selectors } from "./config";
-import { authenticateUser } from "./authenticate";
-import { deleteEventByTitle } from "./deleteEventByTitle";
+} from "../test.common.ts";
+import * as Google from "../../google/calendar.ts";
+import { sleep } from "../../common.ts";
+import { TALK_BASE_URL } from "../../brave/brave-talk.ts";
+import { auth, selectors } from "./config.ts";
+import { authenticateUser } from "./authenticate.ts";
+import { deleteEventByTitle } from "./deleteEventByTitle.ts";
 
 describe("Google Calendar", () => {
   const state = {
@@ -19,7 +21,7 @@ describe("Google Calendar", () => {
     createdEventTitle: null as unknown as string,
   };
 
-  beforeAll(async () => {
+  before(async () => {
     console.log("google:beforeAll");
 
     state.createdEventTitle = Date.now().toString();
@@ -33,7 +35,7 @@ describe("Google Calendar", () => {
     );
   });
 
-  afterAll(async () => {
+  after(async () => {
     console.log("google:afterAll");
 
     await deleteEventByTitle(state.page, state.createdEventTitle);
@@ -44,7 +46,7 @@ describe("Google Calendar", () => {
     console.log("google:isGoogleCalendar");
 
     await state.page.goto(Google.BASE_URL, { waitUntil: "networkidle0" });
-    expect(Google.isGoogleCalendar(state.page.url())).toBe(true);
+    assert.equal(Google.isGoogleCalendar(state.page.url()), true);
   });
 
   it("Displays the Brave Talk button on New Event", async () => {
@@ -70,7 +72,7 @@ describe("Google Calendar", () => {
       Google.TALK_BUTTON_SELECTOR,
       options
     );
-    expect(braveTalkButton).toBeTruthy();
+    assert.ok(braveTalkButton);
   });
 
   it("Persists button between panel selections", async () => {
@@ -104,7 +106,7 @@ describe("Google Calendar", () => {
       options
     );
 
-    expect(braveTalkButton).toBeTruthy();
+    assert.ok(braveTalkButton);
   });
 
   it("Clicking Brave Talk button opens popup window", async () => {
@@ -123,7 +125,7 @@ describe("Google Calendar", () => {
       button?.click(),
     ]);
 
-    expect(target).toBeTruthy();
+    assert.ok(target);
   });
 
   it("Stores Brave Talk meeting URL in the event location", async () => {
@@ -140,7 +142,7 @@ describe("Google Calendar", () => {
 
     state.braveMeetingUrl = locationValue as string;
 
-    expect(state.braveMeetingUrl.startsWith(TALK_BASE_URL)).toBe(true);
+    assert.equal(state.braveMeetingUrl.startsWith(TALK_BASE_URL), true);
   });
 
   it("Brave Talk meeting URL persists after Save event", async () => {
@@ -177,7 +179,7 @@ describe("Google Calendar", () => {
       }
     }
 
-    expect(eventChip.length).toBe(1);
+    assert.equal(eventChip.length, 1);
 
     eventChip[0].click();
     await sleep(2_000);
@@ -189,6 +191,6 @@ describe("Google Calendar", () => {
     const locationAnchor = await location?.waitForSelector("a", options);
     const anchorText = await locationAnchor?.evaluate((el) => el.textContent);
 
-    expect(anchorText).toBe(state.braveMeetingUrl);
+    assert.equal(anchorText, state.braveMeetingUrl);
   });
 });

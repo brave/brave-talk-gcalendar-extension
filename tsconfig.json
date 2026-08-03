@@ -13,8 +13,6 @@
     "noEmit": true,
     "types": [
       "chrome",
-      "jest",
-      "jsdom",
       "node"
     ],
 

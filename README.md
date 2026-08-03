@@ -39,31 +39,40 @@ After building, the extension files are located in the `/dist` directory.
 
 ## Automated Testing
 
-Tests run against live calendars. Therefore, create a `.env` file at the project's root, populating it with the credentials of the calendar you're testing. Here's a template:
+Tests run on [Node's built-in test runner](https://nodejs.org/api/test.html) and are split into two suites:
 
-```bash
-# Google Details
-GOOGLE_AUTH_URL="https://accounts.google.com"
-GOOGLE_USERNAME="…"
-GOOGLE_PASSWORD="…"
-GOOGLE_RECOVERY_PHONE_NUMBER="…"
-GOOGLE_STAY_SIGNED_IN="false"
+- **Unit tests** (`src/tests/brave/`) run in plain Node, need no browser or credentials, and are safe to run anytime:
 
-# Proton Details
-PROTON_AUTH_URL="https://calendar.proton.me"
-PROTON_USERNAME="…"
-PROTON_PASSWORD="…"
-PROTON_STAY_SIGNED_IN="false"
-```
+  ```bash
+  npm test
+  ```
 
-> Note: You may use the `.env.example` template provided. Rename it to `.env` and modify as needed.
+- **End-to-end tests** (`src/tests/google/`, `src/tests/proton/`) drive a real Brave browser with the built extension loaded, against live calendars. Create a `.env` file at the project's root first, populating it with the credentials of the calendar you're testing:
 
-Run the tests using Puppeteer:
+  ```bash
+  # Google Details
+  GOOGLE_AUTH_URL="https://accounts.google.com"
+  GOOGLE_USERNAME="…"
+  GOOGLE_PASSWORD="…"
+  GOOGLE_RECOVERY_PHONE_NUMBER="…"
+  GOOGLE_STAY_SIGNED_IN="false"
 
-```bash
-npm install
-npm run build
-npm run test # For all calendars
-# Or specify a calendar:
-npm run test proton
-```
+  # Proton Details
+  PROTON_AUTH_URL="https://calendar.proton.me"
+  PROTON_USERNAME="…"
+  PROTON_PASSWORD="…"
+  PROTON_STAY_SIGNED_IN="false"
+  ```
+
+  > Note: You may use the `.env.example` template provided. Rename it to `.env` and modify as needed.
+
+  Then build the extension and run the suite:
+
+  ```bash
+  npm install
+  npm run build
+  npm run test:e2e # Both calendars
+  # Or specify a calendar:
+  npm run test:e2e:proton
+  npm run test:e2e:google
+  ```
