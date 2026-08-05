@@ -1,6 +1,6 @@
-import { selectors } from "./config";
-import { sleep } from "../../common";
-import { Page } from "puppeteer-core";
+import { selectors } from "./config.ts";
+import { sleep } from "../../common.ts";
+import type { Page } from "puppeteer-core";
 
 export async function deleteEventByTitle(
   page: Page,

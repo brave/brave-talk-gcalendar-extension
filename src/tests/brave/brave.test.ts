@@ -1,14 +1,18 @@
-import * as BraveTalk from "../../../src/brave/brave-talk";
+import { describe, it, beforeEach, mock } from "node:test";
+import assert from "node:assert/strict";
+import * as BraveTalk from "../../../src/brave/brave-talk.ts";
 
 describe("Brave Talk", () => {
+  const windowOpen = mock.fn();
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    windowOpen.mock.resetCalls();
   });
 
   global.window = Object.create(global.window ?? {});
 
   Object.defineProperties(global.window, {
-    open: { value: jest.fn() },
+    open: { value: windowOpen },
     screen: { value: { width: 1920, height: 1080 } },
     crypto: {
       value: {
@@ -24,15 +28,15 @@ describe("Brave Talk", () => {
 
   describe("openWindow", () => {
     it("Requires a valid URL", () => {
-      expect(() => BraveTalk.openWindow("")).toThrow();
-      expect(() => BraveTalk.openWindow("a.com")).toThrow();
-      expect(() => BraveTalk.openWindow("https://a.com")).not.toThrow();
+      assert.throws(() => BraveTalk.openWindow(""));
+      assert.throws(() => BraveTalk.openWindow("a.com"));
+      assert.doesNotThrow(() => BraveTalk.openWindow("https://a.com"));
     });
 
     it("Requires a valid name", () => {
-      expect(() => BraveTalk.openWindow("https://a.com", "")).toThrow();
-      expect(() => BraveTalk.openWindow("https://a.com", "_x")).toThrow();
-      expect(() => BraveTalk.openWindow("https://a.com", "x")).not.toThrow();
+      assert.throws(() => BraveTalk.openWindow("https://a.com", ""));
+      assert.throws(() => BraveTalk.openWindow("https://a.com", "_x"));
+      assert.doesNotThrow(() => BraveTalk.openWindow("https://a.com", "x"));
     });
 
     it("Adds noopener and noreferrer to popup window", () => {
@@ -41,14 +45,13 @@ describe("Brave Talk", () => {
       const features = "foo,bar,baz";
       BraveTalk.openWindow(url, name, features);
 
-      const openedURL = (global.window.open as jest.Mock).mock.calls[0][0];
-      const openedName = (global.window.open as jest.Mock).mock.calls[0][1];
-      const openedFeatures = (global.window.open as jest.Mock).mock.calls[0][2];
+      const [openedURL, openedName, openedFeatures] =
+        windowOpen.mock.calls[0].arguments;
 
-      expect(openedName).toBe(name);
-      expect(openedURL.toString()).toBe(url);
-      expect(openedFeatures).toContain("noopener");
-      expect(openedFeatures).toContain("noreferrer");
+      assert.equal(openedName, name);
+      assert.equal(openedURL.toString(), url);
+      assert.ok(openedFeatures.includes("noopener"));
+      assert.ok(openedFeatures.includes("noreferrer"));
     });
   });
 
@@ -56,30 +59,30 @@ describe("Brave Talk", () => {
     it("Requires a valid Room URL", () => {
       const valid = BraveTalk.generateNewRoomUrl();
       const invalid = "https://talk.brave.com/invalid";
-      expect(() => BraveTalk.createRoom("")).toThrow();
-      expect(() => BraveTalk.createRoom(invalid)).toThrow();
-      expect(() => BraveTalk.createRoom(valid)).not.toThrow();
+      assert.throws(() => BraveTalk.createRoom(""));
+      assert.throws(() => BraveTalk.createRoom(invalid));
+      assert.doesNotThrow(() => BraveTalk.createRoom(valid));
     });
 
     it("Contains a create-only parameter", () => {
       const endpoint = BraveTalk.generateNewRoomUrl();
       BraveTalk.createRoom(endpoint);
 
-      const openedURL = (global.window.open as jest.Mock).mock.calls[0][0];
+      const [openedURL] = windowOpen.mock.calls[0].arguments;
       const createOnlyParameter = new URL(openedURL).searchParams.get(
         "create_only"
       );
-      expect(createOnlyParameter).toBe("y");
+      assert.equal(createOnlyParameter, "y");
     });
 
     it("Adds popup, noopener, and noreferrer to popup window", () => {
       const url = BraveTalk.generateNewRoomUrl();
       BraveTalk.createRoom(url);
 
-      const features = (global.window.open as jest.Mock).mock.calls[0][2];
-      expect(features).toContain("popup");
-      expect(features).toContain("noopener");
-      expect(features).toContain("noreferrer");
+      const [, , features] = windowOpen.mock.calls[0].arguments;
+      assert.ok(features.includes("popup"));
+      assert.ok(features.includes("noopener"));
+      assert.ok(features.includes("noreferrer"));
     });
   });
 });

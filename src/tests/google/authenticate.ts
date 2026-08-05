@@ -1,6 +1,6 @@
-import { sleep } from "../../common";
-import { auth } from "./config";
-import { Page, PuppeteerLifeCycleEvent } from "puppeteer-core";
+import { sleep } from "../../common.ts";
+import { auth } from "./config.ts";
+import type { Page, PuppeteerLifeCycleEvent } from "puppeteer-core";
 
 enum PageType {
   LOGIN,

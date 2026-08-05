@@ -1,5 +1,6 @@
 import path from "node:path";
-import puppeteer, { Page, Browser } from "puppeteer-core";
+import puppeteer from "puppeteer-core";
+import type { Page, Browser } from "puppeteer-core";
 import { access } from "node:fs/promises";
 
 /**

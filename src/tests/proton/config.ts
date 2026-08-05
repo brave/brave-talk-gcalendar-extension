@@ -1,4 +1,4 @@
-import { TALK_BUTTON_ID } from "../../proton/calendar";
+import { TALK_BUTTON_ID } from "../../proton/calendar.ts";
 
 export const auth = {
   AUTH_URL: process.env.PROTON_AUTH_URL,

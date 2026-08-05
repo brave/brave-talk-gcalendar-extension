@@ -7,11 +7,12 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "types": [
       "chrome",
-      "jest",
-      "jsdom",
       "node"
     ],
 
