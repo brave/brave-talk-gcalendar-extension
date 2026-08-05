@@ -120,10 +120,8 @@ export function buildQuickAddButton(tabPanel: HTMLElement) {
               makeElement("div", { class: "emaTS yLISWd" },
                 makeElement("div", { class: "Kh5Sib FAE19b", "data-use-button-for-single-solution": "true" },
                   makeElement("button", {
-                    class: "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ nCP5yc AjY5Oe DuMIQc LQeN7 JTAoxf Z1uZib",
+                    class: "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ nCP5yc AjY5Oe DuMIQc LQeN7 JTAoxf",
                     id: "jitsi_button_quick_add",
-                    "data-idom-class": "nCP5yc AjY5Oe DuMIQc LQeN7 JTAoxf Z1uZib",
-                    "data-solution": "W1szXV0."
                   },
                     makeElement("div", { class: "VfPpkd-Jh9lGc" }),
                     makeElement("div", { class: "VfPpkd-J1Ukfc-LhBDec" }),
@@ -166,7 +164,7 @@ function makeElement(
 export function buildFullScreenAddButton(buttonRow: HTMLElement) {
   // adding brave-talk logo
   const logoDiv1 = document.createElement("div");
-  logoDiv1.setAttribute("class", "tzcF6");
+  logoDiv1.setAttribute("class", "rSG9Ff");
   buttonRow.append(logoDiv1);
   const logodDiv2 = document.createElement("div");
   logodDiv2.setAttribute("class", "DPvwYc jitsi_edit_page_icon");
@@ -195,6 +193,5 @@ export function buildFullScreenAddButton(buttonRow: HTMLElement) {
   btnContent4.append(btnDiv5);
   const btnAnch6 = document.createElement("a");
   btnAnch6.setAttribute("href", "#");
-  btnAnch6.setAttribute("style", "color: white");
   btnDiv5.append(btnAnch6);
 }
