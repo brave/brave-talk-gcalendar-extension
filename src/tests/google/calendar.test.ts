@@ -27,10 +27,8 @@ describe("Google Calendar", () => {
     state.createdEventTitle = Date.now().toString();
     await setupAuthenticatedBrowserSession(authenticateUser, state).catch(
       (error) => {
-        console.log(error);
         console.error("An authenticated session could not be established");
-        // Don't attempt to do any further testing
-        process.exit(1);
+        throw error;
       }
     );
   });
@@ -164,12 +162,14 @@ describe("Google Calendar", () => {
 
     await sleep(2_000);
 
-    const eventChip = (await state.page.$$(selectors.EVENT_CHIP)).filter(
-      async (el) => {
+    const chips = await state.page.$$(selectors.EVENT_CHIP);
+    const chipMatches = await Promise.all(
+      chips.map(async (el) => {
         const text = await el.evaluate((el) => el.textContent);
-        return text?.includes(state.createdEventTitle);
-      }
+        return text?.includes(state.createdEventTitle) ?? false;
+      })
     );
+    const eventChip = chips.filter((_, i) => chipMatches[i]);
 
     if (eventChip.length > 1) {
       console.warn("Found multiple event chips with the same title:");
