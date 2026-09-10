@@ -1,6 +1,5 @@
-npm run format
-git diff --quiet -- src/ scripts/ || {
+npm run format:check || {
+  npm run format
   echo "husky: prettier rewrote files. Stage the changes and commit again." >&2
   exit 1
 }
-
