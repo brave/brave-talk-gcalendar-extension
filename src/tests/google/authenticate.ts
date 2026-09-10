@@ -2,14 +2,16 @@ import { sleep } from "../../common.ts";
 import { auth } from "./config.ts";
 import type { Page, PuppeteerLifeCycleEvent } from "puppeteer-core";
 
-enum PageType {
-  LOGIN,
-  LOGIN_CAPTCHA,
-  ACCOUNT_CHOOSER,
-  MY_ACCOUNT,
-  CALENDAR,
-  WORKSPACE,
-}
+const PageType = {
+  LOGIN: "LOGIN",
+  LOGIN_CAPTCHA: "LOGIN_CAPTCHA",
+  ACCOUNT_CHOOSER: "ACCOUNT_CHOOSER",
+  MY_ACCOUNT: "MY_ACCOUNT",
+  CALENDAR: "CALENDAR",
+  WORKSPACE: "WORKSPACE",
+} as const;
+
+type PageType = (typeof PageType)[keyof typeof PageType];
 
 export async function getPageType(page: Page): Promise<PageType | undefined> {
   console.log("google:getPageType", page.url());

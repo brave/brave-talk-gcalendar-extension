@@ -13,10 +13,12 @@ const SELECTORS = {
 export const TALK_BUTTON_ID = "jitsi_button_quick_add";
 export const TALK_ICON_URL = chrome.runtime.getURL("brave_talk_icon.svg");
 
-enum ButtonStates {
-  CREATE,
-  JOIN,
-}
+const ButtonStates = {
+  CREATE: "CREATE",
+  JOIN: "JOIN",
+} as const;
+
+type ButtonStates = (typeof ButtonStates)[keyof typeof ButtonStates];
 
 export function handleButtonClick(event: Event): void {
   event.preventDefault();

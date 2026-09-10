@@ -5,9 +5,9 @@ import {
   watchForChanges as googleWatchForChanges,
   checkForAutoCreateMeetingFlag as googleCheckAutoCreate,
   watchForGmailCompanion,
-} from "./google/calendar";
+} from "./google/calendar.ts";
 
-import { isProtonCalendar, listenForEventDialog } from "./proton/calendar";
+import { isProtonCalendar, listenForEventDialog } from "./proton/calendar.ts";
 
 // TODO (Sampson): Move this to a dedicated component
 watchForGmailCompanion();
