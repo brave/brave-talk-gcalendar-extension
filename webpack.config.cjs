@@ -1,26 +1,39 @@
 const path = require("path");
 const fs = require("fs");
-const CopyPlugin = require("copy-webpack-plugin");
 const packageJson = require("./package.json");
 const srcDir = path.join(__dirname, "src");
+const publicDir = path.join(__dirname, "public");
 
-function updateManifestVersionPlugin(compiler, callback) {
-  const manifestPath = path.join(__dirname, 'public', 'manifest.json');
+function copyPublicPlugin() {
+  return {
+    apply(compiler) {
+      compiler.hooks.afterCompile.tap("CopyPublic", (compilation) => {
+        compilation.contextDependencies.add(publicDir);
+      });
 
-  try {
-    const manifestContent = fs.readFileSync(manifestPath, 'utf8');
-    const manifest = JSON.parse(manifestContent);
+      compiler.hooks.afterEmit.tap("CopyPublic", (compilation) => {
+        const manifestPath = path.join(publicDir, "manifest.json");
 
-    if (manifest.version !== packageJson.version) {
-      manifest.version = packageJson.version;
-      fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-      console.log(`Updated manifest.json version to ${packageJson.version}`);
-    }
-  } catch (error) {
-    console.error('Error updating manifest.json:', error);
-  }
-  
-  callback();
+        try {
+          const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+          if (manifest.version !== packageJson.version) {
+            manifest.version = packageJson.version;
+            fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+            console.log(
+              `Updated manifest.json version to ${packageJson.version}`
+            );
+          }
+        } catch (error) {
+          console.error("Error updating manifest.json:", error);
+        }
+
+        fs.cpSync(publicDir, compilation.options.output.path, {
+          recursive: true,
+        });
+      });
+    },
+  };
 }
 
 module.exports = {
@@ -47,18 +60,5 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
   },
-  plugins: [
-    {
-      apply: (compiler) => {
-        compiler.hooks.beforeRun.tapAsync(
-          'UpdateManifestVersion',
-          updateManifestVersionPlugin
-        );
-      }
-    },
-    new CopyPlugin({
-      patterns: [{ from: "public" }],
-      options: {},
-    }),
-  ],
+  plugins: [copyPublicPlugin()],
 };
