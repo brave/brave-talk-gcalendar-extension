@@ -4,6 +4,37 @@ const packageJson = require("./package.json");
 const srcDir = path.join(__dirname, "src");
 const publicDir = path.join(__dirname, "public");
 
+function removeNonWebpackOutput(destDir, compilation) {
+  const webpackAssets = new Set(
+    compilation.getAssets().map((asset) => asset.name.replace(/\\/g, "/"))
+  );
+
+  function walk(dir) {
+    if (!fs.existsSync(dir)) {
+      return;
+    }
+
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        walk(full);
+        if (fs.readdirSync(full).length === 0) {
+          fs.rmdirSync(full);
+        }
+        continue;
+      }
+
+      const rel = path.relative(destDir, full).replace(/\\/g, "/");
+      if (!webpackAssets.has(rel)) {
+        fs.unlinkSync(full);
+      }
+    }
+  }
+
+  walk(destDir);
+}
+
 function copyPublicPlugin() {
   return {
     apply(compiler) {
@@ -28,9 +59,9 @@ function copyPublicPlugin() {
           console.error("Error updating manifest.json:", error);
         }
 
-        fs.cpSync(publicDir, compilation.options.output.path, {
-          recursive: true,
-        });
+        const destDir = compilation.options.output.path;
+        removeNonWebpackOutput(destDir, compilation);
+        fs.cpSync(publicDir, destDir, { recursive: true });
       });
     },
   };
