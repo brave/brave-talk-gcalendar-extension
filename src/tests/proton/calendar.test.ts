@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import type { Browser, Page, ElementHandle } from "puppeteer-core";

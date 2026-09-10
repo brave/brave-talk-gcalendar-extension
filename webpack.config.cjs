@@ -41,14 +41,8 @@ module.exports = {
       },
     },
   },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: { loader: "ts-loader", options: { transpileOnly: true } },
-        exclude: /node_modules/,
-      },
-    ],
+  experiments: {
+    typescript: true,
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
