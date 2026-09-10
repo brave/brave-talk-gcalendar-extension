@@ -16,7 +16,7 @@
     "watch": "webpack --mode development --devtool inline-source-map --watch",
     "format": "prettier --write src/ scripts/",
     "format:check": "prettier --check src/ scripts/",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
