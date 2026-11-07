@@ -39,6 +39,6 @@
     "puppeteer-core": "25.10.0",
     "typescript": "7.0.2",
     "webpack": "5.110.3",
-    "webpack-cli": "7.2.3"
+    "webpack-cli": "7.3.1"
   }
 }
